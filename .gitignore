@@ -7,6 +7,9 @@ _ReSharper*/
 *.suo
 *.userprefs
 *.usertasks
+bin/
+obj/
+MyTestBuild/
 
 # C# / .NET
 [Bb]in/
