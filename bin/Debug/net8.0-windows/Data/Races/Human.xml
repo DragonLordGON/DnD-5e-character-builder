@@ -1,0 +1,13 @@
+<elements>
+  <element name="Human" type="Race" id="ID_PHB_RACE_HUMAN" source="PHB">
+    <description>Humans are the most adaptable and ambitious people among the common races.</description>
+    <setters>
+      <set name="ability_str">1</set>
+      <set name="ability_dex">1</set>
+      <set name="ability_con">1</set>
+      <set name="ability_int">1</set>
+      <set name="ability_wis">1</set>
+      <set name="ability_cha">1</set>
+    </setters>
+  </element>
+</elements>
