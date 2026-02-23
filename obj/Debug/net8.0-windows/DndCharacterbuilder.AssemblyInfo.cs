@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DndCharacterbuilder")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f828943f6a7f7dcecaf547ac9a281158d482d6e1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08cdd286d106b8b5a05c1a43ef397056401ed162")]
 [assembly: System.Reflection.AssemblyProductAttribute("DndCharacterbuilder")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DndCharacterbuilder")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

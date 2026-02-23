@@ -10,7 +10,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DndCharacterBuilder.Models;
 using DndCharacterBuilder.Services;
-using Microsoft.VisualBasic;
 
 namespace DndCharacterBuilder
 {
@@ -24,27 +23,31 @@ namespace DndCharacterBuilder
         private ItemLoader _itemLoader = new ItemLoader();
 
         // State
+        private Character _activeCharacter = new Character();
         private string _currentLanguage = "en";
         private double _currentGold = 100.0;
         private bool _isHomebrewAllowed = false;
         private bool _isRaceLocked = false;
         private Action _pendingOverlayAction;
 
-        // Ability Scores (PHB Point Buy: Min 8, Max 15)
-        private Dictionary<string, int> _abilityScores = new Dictionary<string, int> 
-        { 
-            { "STR", 8 }, { "DEX", 8 }, { "CON", 8 }, 
-            { "INT", 8 }, { "WIS", 8 }, { "CHA", 8 } 
-        };
+        private void InitializeCharacter()
+        {
+            _activeCharacter = new Character();
+            _activeCharacter.BaseStats = new Dictionary<string, int> 
+            { 
+                { "STR", 8 }, { "DEX", 8 }, { "CON", 8 }, 
+                { "INT", 8 }, { "WIS", 8 }, { "CHA", 8 } 
+            };
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+            InitializeCharacter();
             LoadAllData();
             
-            InventoryDisplay.ItemsSource = _playerInventory;
-            MainModeTab.SelectedIndex = 0; 
-            UpdateStatsUI(); 
+            MainModeTab.SelectedIndex = 0;
+            UpdateStatsUI();
         }
 
         private void LoadAllData()
@@ -53,6 +56,9 @@ namespace DndCharacterBuilder
             {
                 _allRaces = _xmlLoader.LoadRaces(true); 
                 _allLibraryItems = _itemLoader.LoadItems();
+
+                // Simulation de chargement de classes (Peut être remplacé par un ClassLoader plus tard)
+                PopulateClasses();
             }
             catch (Exception ex)
             {
@@ -61,101 +67,178 @@ namespace DndCharacterBuilder
             RefreshUI();
         }
 
+        private void PopulateClasses()
+        {
+            var classes = _xmlLoader.LoadClasses();
+            ClassList.ItemsSource = classes;
+        }
+
         private void RefreshUI()
         {
             var filteredRaces = _allRaces.Where(r => _isHomebrewAllowed || r.Source == "PHB").ToList();
             RaceList.ItemsSource = filteredRaces;
 
-            ShopList.Items.Clear();
-            foreach (var item in _allLibraryItems)
-                ShopList.Items.Add($"{item.GetDisplayName(_currentLanguage)} — {item.DefaultCostGp}gp");
-
-            WalletLabel.Text = _currentLanguage == "fr" ? $"{_currentGold} po" : $"{_currentGold} gp";
+            // ShopList and WalletLabel are not present in XAML. Shop UI refresh skipped.
         }
 
         // --- NEW CHARACTER WORKFLOW ---
 
         private void NewCharacter_Click(object sender, RoutedEventArgs e)
         {
-            // Reset to default (8s)
-            foreach (var key in _abilityScores.Keys.ToList()) _abilityScores[key] = 8;
+            InitializeCharacter();
             UpdateStatsUI();
 
             ShowOverlay("NEW HERO", 
                 "ADVANCED: Start with all 8s (27 points remaining).\nSIMPLE: Start with all 10s (15 points remaining).", 
                 () => { 
                     MainModeTab.SelectedIndex = 1; 
-                    BuilderTabControl.SelectedIndex = 0; 
+                    BuilderTabControl.SelectedIndex = 0; // Race Selection is first
                 }, 
                 false, "", true);
-            
+
             OverlayConfirmBtn.Content = "ADVANCED";
             OverlayAltBtn.Content = "SIMPLE";
         }
 
         private void SimplePreset_Click(object sender, RoutedEventArgs e)
         {
-            // Set all stats to a balanced baseline of 10
-            _abilityScores["STR"] = 10;
-            _abilityScores["DEX"] = 10;
-            _abilityScores["CON"] = 10;
-            _abilityScores["INT"] = 10;
-            _abilityScores["WIS"] = 10;
-            _abilityScores["CHA"] = 10;
+            foreach(var key in _activeCharacter.BaseStats.Keys.ToList()) _activeCharacter.BaseStats[key] = 10;
 
             UpdateStatsUI();
             OverlayBlur.Visibility = Visibility.Collapsed;
-            
-            // Navigate to Stats page so they can spend the remaining 15 points
-            MainModeTab.SelectedIndex = 1;
-            BuilderTabControl.SelectedIndex = 1;
 
-            ShowOverlay("BALANCED START", "All stats set to 10. You have 15 points left to customize!", null);
+            MainModeTab.SelectedIndex = 1;
+            BuilderTabControl.SelectedIndex = 0; // Start at Race Selection
         }
 
-        // --- NAVIGATION ---
+        private void LevelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+             if (LevelSelector.SelectedItem is ComboBoxItem item && int.TryParse(item.Content.ToString(), out int lvl))
+             {
+                 _activeCharacter.Level = lvl;
+                 UpdateLevelUnlocks();
+                 UpdateStatsUI();
+             }
+        }
+        
+        private void UpdateLevelUnlocks()
+        {
+            _activeCharacter.Passives.Clear();
 
+            if (_activeCharacter.Race != null)
+            {
+                // Reset passives to base race passives
+                if (_activeCharacter.Race.Passives != null)
+                   _activeCharacter.Passives.AddRange(_activeCharacter.Race.Passives);
+                
+                // Process Race Level Unlocks
+                foreach(var unlock in _activeCharacter.Race.Unlocks)
+                {
+                    if (_activeCharacter.Level >= unlock.Level)
+                    {
+                        _activeCharacter.Passives.Add($"[Race Lvl {unlock.Level}] {unlock.Description}");
+                    }
+                }
+            }
+
+            if (_activeCharacter.Class != null)
+            {
+                 // Add base class info or passives
+                 if (_activeCharacter.Class.Passives != null)
+                   _activeCharacter.Passives.AddRange(_activeCharacter.Class.Passives);
+
+                 // Process Class Level Unlocks
+                 foreach(var unlock in _activeCharacter.Class.Unlocks)
+                 {
+                     if (_activeCharacter.Level >= unlock.Level)
+                     {
+                         _activeCharacter.Passives.Add($"[Class Lvl {unlock.Level}] {unlock.Description}");
+                     }
+                 }
+            }
+        }
+
+        // --- NAVIGATION --- This line is just context for replacement
         private void BackToMenu_Click(object sender, RoutedEventArgs e) => MainModeTab.SelectedIndex = 0;
         private void GoToRace_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 0;
-        private void GoToStats_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 1;
+        private void GoToClass_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 1;
+        private void GoToStats_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 2;
+
+        // private int _startingLevel = 1; // Removed, using _activeCharacter.Level
 
         // --- ABILITY SCORE (POINT BUY) LOGIC ---
+        
+        private int GetTotalPointsBudget()
+        {
+            // Base budget: 27
+            int budget = 27;
+
+            if (_isHomebrewAllowed) 
+            {
+               budget += 10; 
+            }
+
+            int lvl = _activeCharacter.Level;
+
+            if (_activeCharacter.Class != null && _activeCharacter.Class.ASIs != null && _activeCharacter.Class.ASIs.Any())
+            {
+                // Use class specific ASIs (e.g., Fighters get more)
+                foreach(int asiLvl in _activeCharacter.Class.ASIs)
+                {
+                    if (lvl >= asiLvl) budget += 2;
+                }
+            }
+            else
+            {
+                // Default PHB ASIs if no class selected
+                if (lvl >= 4) budget += 2;
+                if (lvl >= 8) budget += 2;
+                if (lvl >= 12) budget += 2;
+                if (lvl >= 16) budget += 2;
+                if (lvl >= 19) budget += 2;
+            }
+
+            return budget;
+        }
 
         private int GetNextScoreCost(int currentScore)
         {
-            // 5e Point Buy: 8-13 (1pt), 14-15 (2pts)
-            return (currentScore >= 13) ? 2 : 1;
+            if (currentScore >= 15 && !_isHomebrewAllowed) return 999; // Cap at 15 for standard
+            if (currentScore >= 13) return 2;
+            return 1;
         }
 
         private void StatUp_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is string stat)
             {
-                int currentScore = _abilityScores[stat];
-
-                if (currentScore >= 15)
+                int currentScore = _activeCharacter.BaseStats[stat];
+                
+                // Cap Check
+                if (currentScore >= 15 && !_isHomebrewAllowed)
                 {
-                    ShowOverlay("MAX REACHED", "You cannot go above 15 using Point Buy.", null);
+                    ShowOverlay("MAX REACHED", "You cannot go above 15 using Standard Point Buy. Enable Homebrew to bypass.", null);
                     return;
+                }
+                if (currentScore >= 20) // Absolute hard cap typically 20 in 5e
+                {
+                     ShowOverlay("HARD CAP", "Attributes cannot exceed 20.", null);
+                     return;
                 }
 
                 int cost = GetNextScoreCost(currentScore);
                 int currentPointsSpent = CalculateTotalPointsSpent();
+                int budget = GetTotalPointsBudget();
 
-                if (27 - currentPointsSpent >= cost)
+                if (budget - currentPointsSpent >= cost)
                 {
-                    if (currentScore == 13)
+                    if (currentScore == 13 && !_isHomebrewAllowed)
                     {
-                        ShowOverlay("HEAVY INVESTMENT", 
-                            "Going above 13 costs 2 points. Continue?", 
-                            () => ApplyStatChange(stat, 1));
+                        ShowOverlay("HEAVY INVESTMENT", "Going above 13 costs 2 points. Continue?", () => ApplyStatChange(stat, 1));
                     }
                     else ApplyStatChange(stat, 1);
                 }
-                else
-                {
-                    ShowOverlay("INSUFFICIENT POINTS", "You don't have enough points for this increase.", null);
-                }
+                else ShowOverlay("INSUFFICIENT POINTS", "You don't have enough points for this increase based on your level/settings.", null);
             }
         }
 
@@ -163,31 +246,38 @@ namespace DndCharacterBuilder
         {
             if (sender is Button btn && btn.Tag is string stat)
             {
-                if (_abilityScores[stat] > 8) ApplyStatChange(stat, -1);
+                if (_activeCharacter.BaseStats[stat] > 8) ApplyStatChange(stat, -1);
             }
         }
 
         private void ApplyStatChange(string stat, int delta)
         {
-            _abilityScores[stat] += delta;
-            UpdateStatsUI();
+             _activeCharacter.BaseStats[stat] += delta;
+             UpdateStatsUI();
         }
 
         private int CalculateTotalPointsSpent()
         {
-            return _abilityScores.Values.Sum(v => {
-                // Calculation relative to base 8
-                if (v <= 13) return v - 8;
-                if (v == 14) return 7; 
-                if (v == 15) return 9;
+            return _activeCharacter.BaseStats.Values.Sum(v => {
+                if (v <= 15)
+                {
+                    if (v <= 13) return v - 8;
+                    if (v == 14) return 7; 
+                    if (v == 15) return 9;
+                }
+                // Extended cost for homebrew > 15
+                if (v > 15) return 9 + (v - 15) * 2; 
                 return 0;
             });
         }
 
         private void UpdateStatsUI()
         {
+            if (PointsRemainingLabel == null) return; // Prevent crash during initialization
+
+            int budget = GetTotalPointsBudget();
             int spent = CalculateTotalPointsSpent();
-            int remaining = 27 - spent;
+            int remaining = budget - spent;
 
             PointsRemainingLabel.Text = remaining.ToString();
             PointsRemainingLabel.Foreground = remaining < 0 ? Brushes.Crimson : (SolidColorBrush)FindResource("AccentColor");
@@ -203,9 +293,23 @@ namespace DndCharacterBuilder
         private void UpdateStatLine(string key, TextBlock valLbl, TextBlock modLbl)
         {
             if (valLbl == null || modLbl == null) return;
-            int score = _abilityScores[key];
-            valLbl.Text = score.ToString();
-            int mod = (int)Math.Floor((score - 10) / 2.0);
+            
+            int baseScore = _activeCharacter.BaseStats[key];
+            int racialBonus = 0;
+            if (_activeCharacter.Race != null && _activeCharacter.Race.AbilityBonuses.ContainsKey(key))
+            {
+                racialBonus = _activeCharacter.Race.AbilityBonuses[key];
+            }
+            // Handle "Any" bonuses logic if needed? For now, standard racial stats.
+            
+            int totalScore = baseScore + racialBonus;
+            
+            valLbl.Text = totalScore.ToString();
+            // Show bonus visually
+            if (racialBonus > 0) valLbl.Foreground = Brushes.LightGreen;
+            else valLbl.Foreground = Brushes.White;
+
+            int mod = (int)Math.Floor((totalScore - 10) / 2.0);
             modLbl.Text = mod >= 0 ? $"+{mod}" : mod.ToString();
         }
 
@@ -230,17 +334,34 @@ namespace DndCharacterBuilder
 
         private void CloseOverlay_Click(object sender, RoutedEventArgs e) => OverlayBlur.Visibility = Visibility.Collapsed;
 
-        // --- RACE SELECTION ---
+        // --- SELECTION LOGIC ---
+
+        private void RaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RaceList.SelectedItem is not Race race) return; // Allow selection even if locked for viewing, but assume locked means logic handled elsewhere or list disabled
+            
+            _activeCharacter.Race = race;
+            RaceDescription.Text = race.Description;
+            UpdateLevelUnlocks();
+            UpdateStatsUI();
+        }
+
+        private void ClassList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ClassList.SelectedItem is CharacterClass selected)
+            {
+                _activeCharacter.Class = selected;
+                ClassDescription.Text = selected.Description;
+                UpdateLevelUnlocks();
+                // If the class changes, the character might have different features/stats affecting points (like ASI from Fighter 6)
+                // ASIs from class are mostly choices, but let's refresh UI anyway.
+                UpdateStatsUI(); 
+            }
+        }
 
         public void RaceList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (RaceList.SelectedItem != null && !_isRaceLocked) LockRace();
-        }
-
-        private void RaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_isRaceLocked || RaceList.SelectedItem is not Race race) return;
-            RaceDescription.Text = race.Description;
         }
 
         private void LockRace()
@@ -248,8 +369,7 @@ namespace DndCharacterBuilder
             if (RaceList.SelectedItem is Race selected)
             {
                 _isRaceLocked = true;
-                ICollectionView view = CollectionViewSource.GetDefaultView(RaceList.ItemsSource);
-                view.Filter = item => ((Race)item).Name == selected.Name;
+                RaceList.IsEnabled = false; // Grey out the list to lock it
                 UpdateRaceUIState();
             }
         }
@@ -257,24 +377,18 @@ namespace DndCharacterBuilder
         public void UnlockRace_Click(object sender, RoutedEventArgs e)
         {
             _isRaceLocked = false;
-            ICollectionView view = CollectionViewSource.GetDefaultView(RaceList.ItemsSource);
-            view.Filter = null; 
+            RaceList.IsEnabled = true; // Unlock the list
             UpdateRaceUIState();
             e.Handled = true; 
         }
 
         private void UpdateRaceUIState()
         {
-            NextToStatsBtn.IsEnabled = _isRaceLocked;
-            RaceList.UpdateLayout();
-            if (RaceList.Items.Count > 0)
+            if (RaceList.SelectedItem != null)
             {
-                var container = RaceList.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
-                if (container != null)
-                {
-                    var lockCheck = FindChild<TextBlock>(container, "LockCheck");
-                    if (lockCheck != null) lockCheck.Visibility = _isRaceLocked ? Visibility.Visible : Visibility.Collapsed;
-                }
+                 // We don't really need to toggle a checkmark if the whole list is disabled to indicate lock.
+                 // But if we want to show a lock icon on the selected item, we'd need to find its container.
+                 // For now, let's just rely on the list being disabled as visual feedback.
             }
         }
 
@@ -282,21 +396,11 @@ namespace DndCharacterBuilder
 
         private void BuyItem_Click(object sender, RoutedEventArgs e)
         {
-            if (ShopList.SelectedIndex == -1) return;
-            var item = _allLibraryItems[ShopList.SelectedIndex];
-            string displayName = item.GetDisplayName(_currentLanguage);
-            
-            ShowOverlay($"BUY {displayName}?", $"Cost: {item.DefaultCostGp}gp. Current Gold: {_currentGold}gp.", () => {
-                if (_currentGold >= item.DefaultCostGp) {
-                    _currentGold -= item.DefaultCostGp;
-                    _playerInventory.Add(new InventoryItem { Name = displayName, PricePaid = item.DefaultCostGp, Weight = item.Weight });
-                    RefreshUI();
-                } else ShowOverlay("NOT ENOUGH GOLD", "Go slay some goblins first!", null);
-            });
+            // ShopList is not present in XAML. Shop buy logic skipped.
         }
 
         private void LanguageToggle_Click(object sender, RoutedEventArgs e) { _currentLanguage = (_currentLanguage == "en") ? "fr" : "en"; RefreshUI(); }
-        private void HomebrewToggle_Click(object sender, RoutedEventArgs e) { _isHomebrewAllowed = HomebrewToggle.IsChecked ?? false; RefreshUI(); }
+        private void HomebrewToggle_Click(object sender, RoutedEventArgs e) { _isHomebrewAllowed = HomebrewToggle.IsChecked ?? false; UpdateStatsUI(); RefreshUI(); }
         private void CategoryFilter_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
 
         private T? FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
