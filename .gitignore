@@ -1,0 +1,33 @@
+# Visual Studio
+.vs/
+_ReSharper*/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.usertasks
+
+# C# / .NET
+[Bb]in/
+[Oo]bj/
+*.lock.json
+project.lock.json
+# NuGet Packages
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio Code
+.vscode/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
