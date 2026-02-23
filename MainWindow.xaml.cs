@@ -282,15 +282,15 @@ namespace DndCharacterBuilder
             PointsRemainingLabel.Text = remaining.ToString();
             PointsRemainingLabel.Foreground = remaining < 0 ? Brushes.Crimson : (SolidColorBrush)FindResource("AccentColor");
 
-            UpdateStatLine("STR", StrValue, StrMod);
-            UpdateStatLine("DEX", DexValue, DexMod);
-            UpdateStatLine("CON", ConValue, ConMod);
-            UpdateStatLine("INT", IntValue, IntMod);
-            UpdateStatLine("WIS", WisValue, WisMod);
-            UpdateStatLine("CHA", ChaValue, ChaMod);
+            UpdateStatLine("STR", StrValue, StrBonus, StrMod);
+            UpdateStatLine("DEX", DexValue, DexBonus, DexMod);
+            UpdateStatLine("CON", ConValue, ConBonus, ConMod);
+            UpdateStatLine("INT", IntValue, IntBonus, IntMod);
+            UpdateStatLine("WIS", WisValue, WisBonus, WisMod);
+            UpdateStatLine("CHA", ChaValue, ChaBonus, ChaMod);
         }
 
-        private void UpdateStatLine(string key, TextBlock valLbl, TextBlock modLbl)
+        private void UpdateStatLine(string key, TextBlock valLbl, TextBlock bonusLbl, TextBlock modLbl)
         {
             if (valLbl == null || modLbl == null) return;
             
@@ -300,17 +300,27 @@ namespace DndCharacterBuilder
             {
                 racialBonus = _activeCharacter.Race.AbilityBonuses[key];
             }
-            // Handle "Any" bonuses logic if needed? For now, standard racial stats.
             
-            int totalScore = baseScore + racialBonus;
+            // Display Base Score
+            valLbl.Text = baseScore.ToString();
             
-            valLbl.Text = totalScore.ToString();
-            // Show bonus visually
-            if (racialBonus > 0) valLbl.Foreground = Brushes.LightGreen;
-            else valLbl.Foreground = Brushes.White;
+            // Display Bonus
+            if (racialBonus > 0)
+            {
+                bonusLbl.Text = $"+{racialBonus}";
+                bonusLbl.Visibility = Visibility.Visible;
+                valLbl.Foreground = Brushes.LightGreen; 
+            }
+            else
+            {
+                bonusLbl.Visibility = Visibility.Collapsed;
+                valLbl.Foreground = Brushes.White;
+            }
 
+            // Modifier Calculation (uses total score)
+            int totalScore = baseScore + racialBonus;
             int mod = (int)Math.Floor((totalScore - 10) / 2.0);
-            modLbl.Text = mod >= 0 ? $"+{mod}" : mod.ToString();
+            modLbl.Text = $"{(mod >= 0 ? "+" + mod : mod.ToString())} to {key} throws";
         }
 
         // --- OVERLAY SYSTEM ---

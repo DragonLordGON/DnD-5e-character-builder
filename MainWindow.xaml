@@ -204,7 +204,10 @@
                                 <UniformGrid Grid.Row="1" Columns="3" Rows="2">
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="STRENGTH" HorizontalAlignment="Center" Foreground="Orange" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="StrValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="StrValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="StrBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="StrMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="STR"/>
@@ -212,7 +215,10 @@
                                         </StackPanel></StackPanel></Border>
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="DEXTERITY" HorizontalAlignment="Center" Foreground="SkyBlue" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="DexValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="DexValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="DexBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="DexMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="DEX"/>
@@ -220,7 +226,10 @@
                                         </StackPanel></StackPanel></Border>
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="CONSTITUTION" HorizontalAlignment="Center" Foreground="LightGreen" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="ConValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="ConValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="ConBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="ConMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="CON"/>
@@ -228,7 +237,10 @@
                                         </StackPanel></StackPanel></Border>
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="INTELLIGENCE" HorizontalAlignment="Center" Foreground="MediumPurple" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="IntValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="IntValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="IntBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="IntMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="INT"/>
@@ -236,7 +248,10 @@
                                         </StackPanel></StackPanel></Border>
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="WISDOM" HorizontalAlignment="Center" Foreground="Gold" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="WisValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="WisValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="WisBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="WisMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="WIS"/>
@@ -244,7 +259,10 @@
                                         </StackPanel></StackPanel></Border>
                                     <Border Style="{StaticResource StatCard}"><StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="CHARISMA" HorizontalAlignment="Center" Foreground="LightPink" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock x:Name="ChaValue" Text="8" FontSize="42" HorizontalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="ChaValue" Text="8" FontSize="42" Foreground="White" FontWeight="Bold"/>
+                                            <TextBlock x:Name="ChaBonus" Text="+0" FontSize="18" Foreground="LightGreen" FontWeight="Bold" VerticalAlignment="Top" Margin="2,5,0,0"/>
+                                        </StackPanel>
                                         <TextBlock x:Name="ChaMod" Text="-1" HorizontalAlignment="Center" Foreground="{StaticResource TextSecondary}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                                             <Button Content="-" Width="40" Height="30" Click="StatDown_Click" Tag="CHA"/>
