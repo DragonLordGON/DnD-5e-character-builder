@@ -30,8 +30,9 @@ namespace DndCharacterBuilder.Services
                         var race = new Race {
                             Name = el.Element("Name")?.Value ?? "Unknown",
                             Description = el.Element("Description")?.Value ?? "",
-                            Source = "PHB", // New XML doesn't specify source, assume PHB
+                            Source = "FPHb",
                             CantripsCount = int.TryParse(el.Element("Cantrips")?.Value, out int c) ? c : 0,
+                            ScoreSelectCount = int.TryParse(el.Element("ScoreSelect")?.Value, out int s) ? s : 0,
                             SpellList = el.Element("SpellList")?.Value ?? "",
                             AbilityBonuses = ParseStats(el.Element("Stats")?.Value)
                         };
@@ -117,6 +118,7 @@ namespace DndCharacterBuilder.Services
                         var charClass = new CharacterClass {
                             Name = el.Element("Name")?.Value ?? "Unknown",
                             Description = el.Element("Description")?.Value ?? "",
+                            Source = "FPHb",
                             HitDie = "d" + (el.Element("HitDie")?.Value ?? "8"),
                             PrimaryAbility = el.Element("PrimaryAbility")?.Value ?? "",
                             CantripsCount = int.TryParse(el.Element("CantripsLvl1")?.Value, out int c) ? c : 0,

@@ -13,6 +13,7 @@
     <Passives>Skill Proficiency, Free Feat</Passives>
     <Cantrips>0</Cantrips>
     <FeatsGained>1</FeatsGained>
+    <ScoreSelect>2</ScoreSelect>
     <Description>Gain +1 to two different scores of your choice, one skill proficiency, and one Feat at Level 1.</Description>
   </Race>
 
@@ -21,13 +22,16 @@
     <Stats>CON+2, WIS+1</Stats>
     <Passives>Darkvision, Dwarven Resilience, Dwarven Toughness, Stonecunning, Tool Proficiency</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 CON and +1 WIS. Dwarven Toughness: +1 Max HP per level.</Description>
   </Race>
+
   <Race>
     <Name>Dwarf (Mountain)</Name>
     <Stats>CON+2, STR+2</Stats>
     <Passives>Darkvision, Dwarven Resilience, Dwarven Armor Training, Stonecunning</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 CON and +2 STR. You have proficiency with light and medium armor.</Description>
   </Race>
 
@@ -37,6 +41,7 @@
     <Passives>Darkvision, Fey Ancestry, Trance, Keen Senses, Elf Weapon Training</Passives>
     <Cantrips>1</Cantrips>
     <SpellList>Wizard</SpellList>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 DEX and +1 INT. Choose 1 Cantrip from the Wizard list (INT is casting stat).</Description>
   </Race>
   <Race>
@@ -44,6 +49,7 @@
     <Stats>DEX+2, WIS+1</Stats>
     <Passives>Darkvision, Fey Ancestry, Trance, Mask of the Wild, Fleet of Foot</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 DEX and +1 WIS. Base walking speed increases to 35 feet. Can attempt to hide even when only lightly obscured.</Description>
   </Race>
 
@@ -52,6 +58,7 @@
     <Stats>DEX+2, CHA+1</Stats>
     <Passives>Lucky, Brave, Halfling Nimbleness, Naturally Stealthy</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 DEX and +1 CHA. Lucky: Reroll 1s on d20. Can hide behind creatures one size larger than you.</Description>
   </Race>
   <Race>
@@ -59,6 +66,7 @@
     <Stats>DEX+2, CON+1</Stats>
     <Passives>Lucky, Brave, Halfling Nimbleness, Stout Resilience</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 DEX and +1 CON. Stout Resilience: Advantage/Resistance vs Poison.</Description>
   </Race>
 
@@ -67,6 +75,7 @@
     <Stats>STR+2, CHA+1</Stats>
     <Passives>Draconic Ancestry, Breath Weapon, Damage Resistance</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 STR and +1 CHA. Resistance and Breath Weapon element determined by chosen Dragon Ancestor.</Description>
   </Race>
 
@@ -75,6 +84,7 @@
     <Stats>INT+2, CON+1</Stats>
     <Passives>Darkvision, Gnome Cunning, Artificer's Lore, Tinker</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 INT and +1 CON. Gnome Cunning: Advantage on INT/WIS/CHA saves vs Magic.</Description>
   </Race>
 
@@ -83,6 +93,7 @@
     <Stats>CHA+2, Any+1, Any+1</Stats>
     <Passives>Darkvision, Fey Ancestry, Skill Versatility</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 CHA and +1 to two other scores of your choice. Gain proficiency in two skills of your choice.</Description>
   </Race>
 
@@ -91,6 +102,7 @@
     <Stats>STR+2, CON+1</Stats>
     <Passives>Darkvision, Menacing, Relentless Endurance, Savage Attacks</Passives>
     <Cantrips>0</Cantrips>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 STR and +1 CON. Relentless Endurance: Drop to 1 HP instead of 0 once per long rest. Savage Attacks: Extra damage die on melee crits.</Description>
   </Race>
 
@@ -105,6 +117,7 @@
       <Unlock level="3">Hellish Rebuke (Level 2, 1/Day)</Unlock>
       <Unlock level="5">Darkness (1/Day)</Unlock>
     </LevelUnlocks>
+    <ScoreSelect>0</ScoreSelect>
     <Description>Gain +2 CHA and +1 INT. Resistance to Fire. Unlocks Infernal spells at levels 1, 3, and 5.</Description>
   </Race>
 </Races>

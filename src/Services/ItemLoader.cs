@@ -25,6 +25,7 @@ namespace DndCharacterBuilder.Services
                         Id = el.Attribute("id")?.Value ?? "unknown",
                         NameEn = el.Element("name_en")?.Value ?? "",
                         NameFr = el.Element("name_fr")?.Value ?? "",
+                        Source = "FPHb",
                         DefaultCostGp = double.Parse(el.Element("cost_gp")?.Value ?? "0"),
                         Weight = double.Parse(el.Element("weight")?.Value ?? "0")
                     });
