@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using DndCharacterBuilder.Models;
 using DndCharacterBuilder.Services;
 using System.Collections.Generic;
@@ -60,9 +62,34 @@ namespace DndCharacterBuilder
                  CharacterNameInput.Text = "";
                  CharacterNamePlaceholder.Visibility = Visibility.Visible;
             }
+
             _isRaceLocked = false;
             _isClassLocked = false;
             _isSubclassLocked = false;
+
+            // Reset all database instances visual states
+            if (_allRaces != null) foreach (var r in _allRaces) { r.IsSelected = false; r.IsDisabled = false; }
+            if (_allClasses != null) foreach (var c in _allClasses) { c.IsSelected = false; c.IsDisabled = false; }
+            if (_allSubclasses != null) foreach (var s in _allSubclasses) { s.IsSelected = false; s.IsDisabled = false; }
+
+            // Clear internal selections
+            if (RaceList != null) RaceList.SelectedItem = null;
+            if (ClassList != null) ClassList.SelectedItem = null;
+            if (SubclassList != null) SubclassList.SelectedItem = null;
+
+            // Clear Descriptions
+            if (RaceDescription != null) RaceDescription.Text = "Please select a race to see details.";
+            if (ClassDescription != null) ClassDescription.Text = "Please select a class to see details.";
+            if (SubclassDescription != null) SubclassDescription.Text = "Please select a subclass to see details.";
+
+            if (RaceOptionsPanel != null) RaceOptionsPanel.Visibility = Visibility.Collapsed;
+
+            // Reset UI States
+            UpdateRaceUIState();
+            UpdateClassUIState();
+            UpdateSubclassOptions();
+            UpdateStatsUI();
+            UpdatePortraitUI();
         }
 
         public MainWindow()
@@ -196,6 +223,7 @@ namespace DndCharacterBuilder
         {
             InitializeCharacter();
             UpdateStatsUI();
+            UpdatePortraitUI();
 
             ShowOverlay("NEW HERO", 
                 "ADVANCED: Start with all 8s (27 points remaining).\nSIMPLE: Start with all 10s (15 points remaining).", 
@@ -420,28 +448,39 @@ namespace DndCharacterBuilder
             if (_activeCharacter.BaseStats.ContainsKey(key))
                 baseScore = _activeCharacter.BaseStats[key];
 
-            int racialBonus = 0;
+            int totalBonus = 0;
 
+            // Race Bonuses
             if (_activeCharacter.Race != null)
             {
                 if (_activeCharacter.Race.AbilityBonuses.ContainsKey(key))
-                {
-                    racialBonus += _activeCharacter.Race.AbilityBonuses[key];
-                }
+                    totalBonus += _activeCharacter.Race.AbilityBonuses[key];
                 
                 if (_activeCharacter.Race.SelectedScores != null)
-                {
-                    racialBonus += _activeCharacter.Race.SelectedScores.Count(s => s == key);
-                }
+                    totalBonus += _activeCharacter.Race.SelectedScores.Count(s => s == key);
             }
 
-            int totalScore = baseScore + racialBonus;
-            valLbl.Text = totalScore.ToString();
-            
-            // Display Bonus indicator (e.g., +1)
-            if (racialBonus > 0)
+            // Class Bonuses
+            if (_activeCharacter.Class != null && _activeCharacter.Class.AbilityBonuses.ContainsKey(key))
             {
-                bonusLbl.Text = $"+{racialBonus}";
+                totalBonus += _activeCharacter.Class.AbilityBonuses[key];
+            }
+
+            // Subclass Bonuses
+            if (_activeCharacter.Subclass != null && _activeCharacter.Subclass.AbilityBonuses.ContainsKey(key))
+            {
+                totalBonus += _activeCharacter.Subclass.AbilityBonuses[key];
+            }
+
+            int totalScore = baseScore + totalBonus;
+            
+            // Large Number: Base Points (including point buy additions)
+            valLbl.Text = baseScore.ToString();
+            
+            // Small Number (Top Right): Sum of all racial/class/subclass bonuses
+            if (totalBonus > 0)
+            {
+                bonusLbl.Text = $"+{totalBonus}";
                 bonusLbl.Visibility = Visibility.Visible;
                 valLbl.Foreground = Brushes.LightGreen; 
             }
@@ -451,16 +490,16 @@ namespace DndCharacterBuilder
                 valLbl.Foreground = Brushes.White;
             }
 
-            // Modifier Calculation
+            // Modifier Calculation: (Base + Bonus - 10) / 2
             int mod = (totalScore - 10) / 2;
-            if (totalScore < 10 && (totalScore - 10) % 2 != 0) mod--; // Handle floor for negatives correctly with integer division math
+            if (totalScore < 10 && (totalScore - 10) % 2 != 0) mod--; 
 
             modLbl.Text = (mod >= 0 ? "+" + mod : mod.ToString()) + $" to {key} throws";
         }
 
         // --- OVERLAY SYSTEM ---
 
-        private void ShowOverlay(string title, string message, Action onConfirm, bool showInput = false, string defaultInput = "", bool showSimple = false)
+        private void ShowOverlay(string title, string message, Action? onConfirm, bool showInput = false, string defaultInput = "", bool showSimple = false)
         {
             OverlayTitle.Text = title;
             OverlayMessage.Text = message;
@@ -478,6 +517,68 @@ namespace DndCharacterBuilder
             {
                 OverlayConfirmBtn.Content = "CONFIRM";
             }
+        }
+
+        private void UpdateImage(Image imageControl, string path)
+        {
+            // Removed legacy class/race image update logic
+        }
+
+        private void Portrait_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_activeCharacter.Name))
+            {
+                ShowOverlay("NAME REQUIRED", "Please name your character before choosing a portrait.", null);
+                return;
+            }
+
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image Files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
+                Title = "Choose Character Portrait"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string charFolder = _saveService.GetCharacterFolder(_activeCharacter.Name);
+                    string imageFolder = Path.Combine(charFolder, "Images");
+                    if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+
+                    string fileName = "portrait" + Path.GetExtension(dialog.FileName);
+                    string destPath = Path.Combine(imageFolder, fileName);
+
+                    File.Copy(dialog.FileName, destPath, true);
+                    _activeCharacter.PortraitPath = destPath;
+
+                    UpdatePortraitUI();
+                }
+                catch (Exception ex)
+                {
+                    ShowOverlay("ERROR", $"Failed to copy image: {ex.Message}", null);
+                }
+            }
+        }
+
+        private void UpdatePortraitUI()
+        {
+            if (string.IsNullOrEmpty(_activeCharacter.PortraitPath) || !File.Exists(_activeCharacter.PortraitPath))
+            {
+                PortraitBrushHeader.ImageSource = null;
+                return;
+            }
+
+            try
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(_activeCharacter.PortraitPath, UriKind.Absolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                PortraitBrushHeader.ImageSource = bitmap;
+            }
+            catch { PortraitBrushHeader.ImageSource = null; }
         }
 
         private void ConfirmOverlay_Click(object sender, RoutedEventArgs e)
@@ -712,13 +813,22 @@ namespace DndCharacterBuilder
             if (_activeCharacter.Class == null) 
             {
                 SubclassList.ItemsSource = null;
+                SubclassSelectionCount.Visibility = Visibility.Collapsed;
+                NoSubclassMessage.Visibility = Visibility.Collapsed;
                 return;
             }
 
             var availableSubclasses = _allSubclasses
                 .Where(s => s.ParentClass == _activeCharacter.Class.Name)
                 .ToList();
+
             SubclassList.ItemsSource = availableSubclasses;
+            SubclassSelectionCount.Visibility = Visibility.Visible;
+            NoSubclassMessage.Visibility = availableSubclasses.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            int selectedCount = availableSubclasses.Count(s => s.IsSelected);
+            SubclassSelectionCount.Text = $"{selectedCount}/1 Selected";
+            SubclassSelectionCount.Foreground = selectedCount > 0 ? Brushes.LightGreen : Brushes.Orange;
         }
 
         private void SubclassList_SelectionChanged(object sender, SelectionChangedEventArgs e)

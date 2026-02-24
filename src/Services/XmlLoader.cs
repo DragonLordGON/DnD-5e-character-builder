@@ -94,7 +94,8 @@ namespace DndCharacterBuilder.Services
                 {
                     Name = el.Element("Name")?.Value ?? "Unknown",
                     ParentClass = el.Element("ParentClass")?.Value ?? "Unknown",
-                    Description = el.Element("Description")?.Value ?? ""
+                    Description = el.Element("Description")?.Value ?? "",
+                    AbilityBonuses = ParseStats(el.Element("Stats")?.Value)
                 };
 
                 foreach (var u in el.Elements("Unlock"))
@@ -154,7 +155,8 @@ namespace DndCharacterBuilder.Services
                             HitDie = "d" + (el.Element("HitDie")?.Value ?? "8"),
                             PrimaryAbility = el.Element("PrimaryAbility")?.Value ?? "",
                             CantripsCount = int.TryParse(el.Element("CantripsLvl1")?.Value, out int c) ? c : 0,
-                            SpellList = el.Element("SpellList")?.Value ?? ""
+                            SpellList = el.Element("SpellList")?.Value ?? "",
+                            AbilityBonuses = ParseStats(el.Element("Stats")?.Value)
                         };
                         
                         var saves = el.Element("SavingThrows")?.Value;

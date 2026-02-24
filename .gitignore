@@ -10,6 +10,7 @@ _ReSharper*/
 bin/
 obj/
 MyTestBuild/
+Characters/
 
 # C# / .NET
 [Bb]in/

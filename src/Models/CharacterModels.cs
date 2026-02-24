@@ -42,6 +42,7 @@ namespace DndCharacterBuilder.Models
         public CharacterClass? Class { get; set; }
         public Subclass? Subclass { get; set; }
         public int Level { get; set; } = 1;
+        public string PortraitPath { get; set; } = "";
         public Dictionary<string, int> BaseStats { get; set; } = new Dictionary<string, int>(); 
         public List<string> Passives { get; set; } = new List<string>();
         public List<string> KnownSpells { get; set; } = new List<string>();
@@ -65,6 +66,7 @@ namespace DndCharacterBuilder.Models
         public string SpellList { get; set; } = "";
         public List<LevelUnlock> Unlocks { get; set; } = new List<LevelUnlock>();
         public List<string> Proficiencies { get; set; } = new List<string>();
+        public Dictionary<string, int> AbilityBonuses { get; set; } = new Dictionary<string, int>();
         
         // UI Helpers
         public bool IsSelected { get; set; }
@@ -80,6 +82,7 @@ namespace DndCharacterBuilder.Models
         public string ParentClass { get; set; } = "";
         public string Description { get; set; } = "";
         public List<LevelUnlock> Unlocks { get; set; } = new List<LevelUnlock>();
+        public Dictionary<string, int> AbilityBonuses { get; set; } = new Dictionary<string, int>();
         
         // UI Helpers
         public bool IsSelected { get; set; }

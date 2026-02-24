@@ -238,7 +238,16 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="👤" FontSize="20" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="#555"/>
+                                            <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20" Margin="0,0,15,0" BorderBrush="#333" BorderThickness="1" Background="#252526" VerticalAlignment="Center">
+                                                <Grid>
+                                                    <TextBlock Text="👤" Foreground="#444" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <Ellipse Width="38" Height="38">
+                                                        <Ellipse.Fill>
+                                                            <ImageBrush ImageSource="{Binding PortraitPath}" Stretch="UniformToFill"/>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </Grid>
+                                            </Border>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{Binding Name}" Foreground="White" FontWeight="Bold" FontSize="14"/>
@@ -293,12 +302,24 @@
                                     <Button Content="💾 SAVE" Click="SaveCharacter_Click" Width="80" Height="30" Background="#333" Foreground="White" BorderThickness="0" FontWeight="Bold" Margin="0,0,20,0"/>
                                 </StackPanel>
 
-                                <Grid Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0" Width="250">
-                                    <TextBox x:Name="CharacterNameInput" Height="30" Padding="5" Background="#252526" Foreground="White" BorderBrush="#444" 
-                                             TextChanged="CharacterNameInput_TextChanged" LostFocus="CharacterNameInput_LostFocus" GotFocus="CharacterNameInput_GotFocus"
-                                             VerticalContentAlignment="Center"/>
-                                    <TextBlock x:Name="CharacterNamePlaceholder" Text="Put character name here..." Foreground="Gray" VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False"/>
-                                </Grid>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
+                                    <Border Width="40" Height="40" CornerRadius="20" Margin="0,0,10,0" BorderBrush="#444" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="Portrait_Click" Background="#252526" ToolTip="Change Portrait">
+                                        <Grid>
+                                            <TextBlock Text="👤" Foreground="#555" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <Ellipse x:Name="CharacterPortraitHeader" Width="38" Height="38">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush x:Name="PortraitBrushHeader" Stretch="UniformToFill"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                        </Grid>
+                                    </Border>
+                                    <Grid Width="250">
+                                        <TextBox x:Name="CharacterNameInput" Height="30" Padding="5" Background="#252526" Foreground="White" BorderBrush="#444" 
+                                                 TextChanged="CharacterNameInput_TextChanged" LostFocus="CharacterNameInput_LostFocus" GotFocus="CharacterNameInput_GotFocus"
+                                                 VerticalContentAlignment="Center"/>
+                                        <TextBlock x:Name="CharacterNamePlaceholder" Text="Put character name here..." Foreground="Gray" VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False"/>
+                                    </Grid>
+                                </StackPanel>
 
                                 <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
@@ -398,27 +419,33 @@
 
                                     <Border Grid.Column="1" Margin="20,0,0,0" Background="#1E1E1E" Padding="25" CornerRadius="8">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                            <StackPanel>
-                                                <TextBlock x:Name="RaceDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a race to see details..."/>
-                                                
-                                                <!-- Dynamic Selection Area -->
-                                                <StackPanel x:Name="RaceOptionsPanel" Visibility="Collapsed" Margin="0,20,0,0">
-                                                    <TextBlock Text="ABILITY SCORE BONUSES" Foreground="Orange" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
-                                                    <TextBlock Text="Select ability scores to increase by +1:" Foreground="Gray" FontSize="11" Margin="0,0,0,10" FontStyle="Italic"/>
-                                                    <TextBlock Text="You can only choose 1 of each ability to increase" Foreground="Gray" FontSize="9" Margin="0,0,0,10" FontStyle="Italic"/>
-                                                    <ItemsControl x:Name="ScoreSelectorsList">
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Grid Margin="0,0,0,10">
-                                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                                    <TextBlock Text="{Binding Label}" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                                    <ComboBox Width="120" Style="{StaticResource DarkComboBox}" ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" SelectionChanged="ScoreSelection_Changed"/>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock x:Name="RaceDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a race to see details..."/>
+                                                    
+                                                    <!-- Dynamic Selection Area -->
+                                                    <StackPanel x:Name="RaceOptionsPanel" Visibility="Collapsed" Margin="0,20,0,0">
+                                                        <TextBlock Text="ABILITY SCORE BONUSES" Foreground="Orange" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
+                                                        <TextBlock Text="Select ability scores to increase by +1:" Foreground="Gray" FontSize="11" Margin="0,0,0,10" FontStyle="Italic"/>
+                                                        <TextBlock Text="You can only choose 1 of each ability to increase" Foreground="Gray" FontSize="9" Margin="0,0,0,10" FontStyle="Italic"/>
+                                                        <ItemsControl x:Name="ScoreSelectorsList">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid Margin="0,0,0,10">
+                                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                                        <TextBlock Text="{Binding Label}" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                                                        <ComboBox Width="120" Style="{StaticResource DarkComboBox}" ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" SelectionChanged="ScoreSelection_Changed"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
                                                 </StackPanel>
-                                            </StackPanel>
+                                            </Grid>
                                         </ScrollViewer>
                                     </Border>
                                 </Grid>
@@ -487,7 +514,9 @@
                                     </Grid>
 
                                     <Border Grid.Column="1" Margin="20,0,0,0" Background="#1E1E1E" Padding="25" CornerRadius="8">
-                                        <TextBlock x:Name="ClassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a class to see its abilities..."/>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <TextBlock x:Name="ClassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a class to see its abilities..."/>
+                                        </ScrollViewer>
                                     </Border>
                                 </Grid>
                                 <Button Grid.Row="2" Content="Next: Subclass Selection →" HorizontalAlignment="Right" Width="220" Height="45" Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold" Click="GoToSubclass_Click" Margin="0,20,0,0"/>
@@ -551,10 +580,15 @@
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
+
+                                        <TextBlock x:Name="NoSubclassMessage" Grid.Row="1" Text="Your class has no subclass" Foreground="#666" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontStyle="Italic" Visibility="Collapsed"/>
                                     </Grid>
 
                                     <Border Grid.Column="1" Margin="20,0,0,0" Background="#1E1E1E" Padding="25" CornerRadius="8">
-                                        <TextBlock x:Name="SubclassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a subclass to see details..."/>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <TextBlock x:Name="SubclassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a subclass to see details..."/>
+                                        </ScrollViewer>
                                     </Border>
                                 </Grid>
                                 <Button Grid.Row="2" Content="Next: Ability Scores →" HorizontalAlignment="Right" Width="220" Height="45" Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold" Click="GoToStats_Click" Margin="0,20,0,0"/>

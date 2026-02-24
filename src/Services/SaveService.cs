@@ -32,6 +32,7 @@ namespace DndCharacterBuilder.Services
                 new XElement("Level", character.Level),
                 new XElement("Race", character.Race?.Name ?? ""),
                 new XElement("Class", character.Class?.Name ?? ""),
+                new XElement("PortraitPath", character.PortraitPath),
                 new XElement("IsWIP", character.IsWIP.ToString()),
                 new XElement("BaseStats",
                     from kvp in character.BaseStats
@@ -72,6 +73,7 @@ namespace DndCharacterBuilder.Services
                         {
                             Name = root.Element("Name")?.Value ?? "Unknown",
                             Level = int.Parse(root.Element("Level")?.Value ?? "1"),
+                            PortraitPath = root.Element("PortraitPath")?.Value ?? "",
                             IsWIP = isWip
                         };
                         

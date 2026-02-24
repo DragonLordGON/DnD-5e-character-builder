@@ -42,7 +42,7 @@ namespace DndCharacterBuilder
             {
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string logFile = Path.Combine(_logDir, $"crash_{timestamp}.txt");
-                string message = exceptionObj is Exception ex ? $"{ex.Message}\n{ex.StackTrace}" : exceptionObj.ToString();
+                string message = (exceptionObj as Exception)?.ToString() ?? exceptionObj?.ToString() ?? "Unknown error object";
                 File.WriteAllText(logFile, $"[{DateTime.Now}] CRITICAL ERROR ({source}):\n{message}");
             }
             catch { }
