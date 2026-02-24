@@ -271,7 +271,8 @@
                             <TextBlock Text="PROGRESSION" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" Margin="0,0,0,15"/>
                             <Button Content="1. Race Selection" Click="GoToRace_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Foreground="White" HorizontalContentAlignment="Left" Padding="10"/>
                             <Button Content="2. Class Selection" Click="GoToClass_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Foreground="White" HorizontalContentAlignment="Left" Padding="10"/>
-                            <Button Content="3. Ability Scores" Click="GoToStats_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Foreground="White" HorizontalContentAlignment="Left" Padding="10"/>
+                            <Button Content="3. Subclass Selection" Click="GoToSubclass_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Foreground="White" HorizontalContentAlignment="Left" Padding="10"/>
+                            <Button Content="4. Ability Scores" Click="GoToStats_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Foreground="White" HorizontalContentAlignment="Left" Padding="10"/>
                             <Separator Margin="0,20" Background="{StaticResource BorderColor}"/>
                             <Button Content="← EXIT TO MENU" Click="BackToMenu_Click" Foreground="Gray" FontSize="10" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
                         </StackPanel>
@@ -487,6 +488,73 @@
 
                                     <Border Grid.Column="1" Margin="20,0,0,0" Background="#1E1E1E" Padding="25" CornerRadius="8">
                                         <TextBlock x:Name="ClassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a class to see its abilities..."/>
+                                    </Border>
+                                </Grid>
+                                <Button Grid.Row="2" Content="Next: Subclass Selection →" HorizontalAlignment="Right" Width="220" Height="45" Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold" Click="GoToSubclass_Click" Margin="0,20,0,0"/>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem>
+                            <Grid Margin="30">
+                                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                <StackPanel Margin="0,0,0,25">
+                                    <TextBlock Text="Select Your Archetype" Foreground="White" FontSize="32" FontWeight="Light"/>
+                                    <TextBlock Text="(Double-click to select)" Foreground="Gray" FontSize="12" FontStyle="Italic"/>
+                                </StackPanel>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="350"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                        <TextBlock x:Name="SubclassSelectionCount" Text="0/1 Selected" Foreground="Orange" HorizontalAlignment="Right" Margin="0,0,5,5" FontSize="11" FontWeight="Bold"/>
+
+                                        <ListBox x:Name="SubclassList" Grid.Row="1" Background="#252526" Foreground="White" SelectionChanged="SubclassList_SelectionChanged" MouseDoubleClick="SubclassList_MouseDoubleClick">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                                    <Setter Property="IsEnabled" Value="{Binding IsDisabled, Converter={StaticResource InverseBooleanConverter}}"/>
+                                                    <Setter Property="Padding" Value="10,8"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ListBoxItem">
+                                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" CornerRadius="4" Margin="0,1">
+                                                                    <ContentPresenter/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#333333"/>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsSelected" Value="True">
+                                                                        <Setter Property="Background" Value="#2D2D30"/>
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColor}"/>
+                                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                        <Setter Property="Opacity" Value="0.4"/>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding Name}" Grid.Column="0" FontSize="14" VerticalAlignment="Center"/>
+                                                        <Button Grid.Column="2" Content="✕" Width="20" Height="20" Background="Transparent" Foreground="#FF6B6B" BorderThickness="0" 
+                                                                Visibility="{Binding SelectedVisibility}" Click="UnlockSubclass_Click" ToolTip="Start Over" FontWeight="Bold"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </Grid>
+
+                                    <Border Grid.Column="1" Margin="20,0,0,0" Background="#1E1E1E" Padding="25" CornerRadius="8">
+                                        <TextBlock x:Name="SubclassDescription" TextWrapping="Wrap" Foreground="White" FontSize="15" Text="Select a subclass to see details..."/>
                                     </Border>
                                 </Grid>
                                 <Button Grid.Row="2" Content="Next: Ability Scores →" HorizontalAlignment="Right" Width="220" Height="45" Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold" Click="GoToStats_Click" Margin="0,20,0,0"/>

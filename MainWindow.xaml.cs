@@ -25,8 +25,11 @@ namespace DndCharacterBuilder
     {
         // Data & Services
         private List<Race> _allRaces = new List<Race>();
+        private List<CharacterClass> _allClasses = new List<CharacterClass>();
+        private List<Subclass> _allSubclasses = new List<Subclass>();
         private List<Item> _allLibraryItems = new List<Item>();
         private ObservableCollection<InventoryItem> _playerInventory = new ObservableCollection<InventoryItem>();
+        
         private XmlLoader _xmlLoader = new XmlLoader();
         private ItemLoader _itemLoader = new ItemLoader();
         private SaveService _saveService = new SaveService();
@@ -38,11 +41,13 @@ namespace DndCharacterBuilder
         private bool _isHomebrewAllowed = false;
         private bool _isRaceLocked = false;
         private bool _isClassLocked = false;
+        private bool _isSubclassLocked = false;
         private Action _pendingOverlayAction;
 
         private void InitializeCharacter()
         {
             _activeCharacter = new Character { Name = "" }; // Start empty for input box placeholder
+            _activeCharacter.Subclass = null;
             _activeCharacter.BaseStats = new Dictionary<string, int> 
             { 
                 { "STR", 8 }, { "DEX", 8 }, { "CON", 8 }, 
@@ -57,6 +62,7 @@ namespace DndCharacterBuilder
             }
             _isRaceLocked = false;
             _isClassLocked = false;
+            _isSubclassLocked = false;
         }
 
         public MainWindow()
@@ -159,11 +165,12 @@ namespace DndCharacterBuilder
         {
             try 
             {
-                _allRaces = _xmlLoader.LoadRaces(true); 
+                _allRaces = _xmlLoader.LoadRaces(true);
+                _allClasses = _xmlLoader.LoadClasses();
+                _allSubclasses = _xmlLoader.LoadSubclasses(); 
                 _allLibraryItems = _itemLoader.LoadItems();
 
-                // Simulation de chargement de classes (Peut être remplacé par un ClassLoader plus tard)
-                PopulateClasses();
+                ClassList.ItemsSource = _allClasses;
             }
             catch (Exception ex)
             {
@@ -174,16 +181,13 @@ namespace DndCharacterBuilder
 
         private void PopulateClasses()
         {
-            var classes = _xmlLoader.LoadClasses();
-            ClassList.ItemsSource = classes;
+            // Merged into LoadAllData
         }
 
         private void RefreshUI()
         {
             var filteredRaces = _allRaces.Where(r => _isHomebrewAllowed || r.Source == "FPHb").ToList();
             RaceList.ItemsSource = filteredRaces;
-
-            // ShopList and WalletLabel are not present in XAML. Shop UI refresh skipped.
         }
 
         // --- NEW CHARACTER WORKFLOW ---
@@ -261,13 +265,26 @@ namespace DndCharacterBuilder
                      }
                  }
             }
+
+            if (_activeCharacter.Subclass != null)
+            {
+                 // Process Subclass Level Unlocks
+                 foreach(var unlock in _activeCharacter.Subclass.Unlocks)
+                 {
+                     if (_activeCharacter.Level >= unlock.Level)
+                     {
+                         _activeCharacter.Passives.Add($"[Subclass Lvl {unlock.Level}] {unlock.Description}");
+                     }
+                 }
+            }
         }
 
         // --- NAVIGATION --- This line is just context for replacement
         private void BackToMenu_Click(object sender, RoutedEventArgs e) => MainModeTab.SelectedIndex = 0;
         private void GoToRace_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 0;
         private void GoToClass_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 1;
-        private void GoToStats_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 2;
+        private void GoToSubclass_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 2;
+        private void GoToStats_Click(object sender, RoutedEventArgs e) => BuilderTabControl.SelectedIndex = 3;
 
         // private int _startingLevel = 1; // Removed, using _activeCharacter.Level
 
@@ -649,12 +666,22 @@ namespace DndCharacterBuilder
         {
             _isClassLocked = true;
             UpdateClassUIState();
+            UpdateSubclassOptions();
         }
 
         public void UnlockClass_Click(object sender, RoutedEventArgs e)
         {
-            _isClassLocked = false;
+             _isClassLocked = false;
             _activeCharacter.Class = null;
+            
+            // Reset Subclass
+            _activeCharacter.Subclass = null;
+            _isSubclassLocked = false;
+            SubclassList.ItemsSource = null;
+            SubclassSelectionCount.Text = "0/1 Selected";
+            SubclassSelectionCount.Foreground = Brushes.Orange;
+            UpdateSubclassUIState();
+
             ClassList.SelectedItem = null;
             UpdateClassUIState();
             UpdateStatsUI(); // Clear stats
@@ -680,6 +707,73 @@ namespace DndCharacterBuilder
              }
         }
 
+        private void UpdateSubclassOptions()
+        {
+            if (_activeCharacter.Class == null) 
+            {
+                SubclassList.ItemsSource = null;
+                return;
+            }
+
+            var availableSubclasses = _allSubclasses
+                .Where(s => s.ParentClass == _activeCharacter.Class.Name)
+                .ToList();
+            SubclassList.ItemsSource = availableSubclasses;
+        }
+
+        private void SubclassList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SubclassList.SelectedItem is Subclass sub)
+            {
+                SubclassDescription.Text = sub.Description;
+            }
+        }
+
+        public void SubclassList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (SubclassList.SelectedItem is Subclass sub && !_isSubclassLocked)
+            {
+                _activeCharacter.Subclass = sub;
+                LockSubclass();
+                UpdateLevelUnlocks();
+                UpdateStatsUI();
+            }
+        }
+
+        private void LockSubclass()
+        {
+            _isSubclassLocked = true;
+            UpdateSubclassUIState();
+        }
+
+        public void UnlockSubclass_Click(object sender, RoutedEventArgs e)
+        {
+            _isSubclassLocked = false;
+            _activeCharacter.Subclass = null;
+            SubclassList.SelectedItem = null;
+            UpdateSubclassUIState();
+            UpdateStatsUI(); 
+            e.Handled = true;
+        }
+
+        private void UpdateSubclassUIState()
+        {
+             var currentList = SubclassList.ItemsSource as IEnumerable<Subclass>;
+             if (currentList != null)
+             {
+                 foreach(var s in currentList)
+                 {
+                     s.IsSelected = (_isSubclassLocked && _activeCharacter.Subclass == s);
+                     s.IsDisabled = (_isSubclassLocked && _activeCharacter.Subclass != s);
+                 }
+                 SubclassList.Items.Refresh();
+             }
+             if (SubclassSelectionCount != null)
+             {
+                SubclassSelectionCount.Text = _isSubclassLocked ? "1/1 Selected" : "0/1 Selected";
+                SubclassSelectionCount.Foreground = _isSubclassLocked ? Brushes.LightGreen : Brushes.Orange;
+             }
+        }
 
         // --- SHOP & MISC ---
 

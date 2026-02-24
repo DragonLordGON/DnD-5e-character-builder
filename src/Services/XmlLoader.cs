@@ -75,7 +75,34 @@ namespace DndCharacterBuilder.Services
             }
             return races;
         }
+        public List<Subclass> LoadSubclasses()
+        {
+            var subclasses = new List<Subclass>();
+            string path = Path.Combine(_basePath, "Subclasses/Subclasses.xml");
 
+            if (!File.Exists(path)) return subclasses;
+
+            var doc = XDocument.Load(path);
+            foreach (var el in doc.Root.Elements("Subclass"))
+            {
+                var subclass = new Subclass
+                {
+                    Name = el.Element("Name")?.Value ?? "Unknown",
+                    ParentClass = el.Element("ParentClass")?.Value ?? "Unknown",
+                    Description = el.Element("Description")?.Value ?? ""
+                };
+
+                foreach (var u in el.Elements("Unlock"))
+                {
+                    if (int.TryParse(u.Attribute("level")?.Value, out int lvl))
+                    {
+                        subclass.Unlocks.Add(new LevelUnlock { Level = lvl, Description = u.Value });
+                    }
+                }
+                subclasses.Add(subclass);
+            }
+            return subclasses;
+        }
         private Dictionary<string, int> ParseStats(string? stats)
         {
             var result = new Dictionary<string, int>();

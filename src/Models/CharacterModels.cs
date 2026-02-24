@@ -40,6 +40,7 @@ namespace DndCharacterBuilder.Models
         public string Name { get; set; } = "";
         public Race? Race { get; set; }
         public CharacterClass? Class { get; set; }
+        public Subclass? Subclass { get; set; }
         public int Level { get; set; } = 1;
         public Dictionary<string, int> BaseStats { get; set; } = new Dictionary<string, int>(); 
         public List<string> Passives { get; set; } = new List<string>();
@@ -64,6 +65,21 @@ namespace DndCharacterBuilder.Models
         public string SpellList { get; set; } = "";
         public List<LevelUnlock> Unlocks { get; set; } = new List<LevelUnlock>();
         public List<string> Proficiencies { get; set; } = new List<string>();
+        
+        // UI Helpers
+        public bool IsSelected { get; set; }
+        public bool IsDisabled { get; set; }
+        public System.Windows.Visibility SelectedVisibility => IsSelected ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+        public System.Windows.Media.Brush BackgroundColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(9, 71, 113)) : System.Windows.Media.Brushes.Transparent;
+        public System.Windows.Media.Brush BorderColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 122, 204)) : System.Windows.Media.Brushes.Transparent;
+    }
+
+    public class Subclass
+    {
+        public string Name { get; set; } = "";
+        public string ParentClass { get; set; } = "";
+        public string Description { get; set; } = "";
+        public List<LevelUnlock> Unlocks { get; set; } = new List<LevelUnlock>();
         
         // UI Helpers
         public bool IsSelected { get; set; }

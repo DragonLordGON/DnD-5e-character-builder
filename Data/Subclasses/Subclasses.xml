@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Subclasses>
+  <Subclass>
+    <Name>Path of the Berserker</Name>
+    <ParentClass>Barbarian</ParentClass>
+    <Description>Focuses on pure rage and physical might.</Description>
+    <Unlock level="3">Frenzy</Unlock>
+    <Unlock level="6">Mindless Rage</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>Path of the Totem Warrior</Name>
+    <ParentClass>Barbarian</ParentClass>
+    <Description>A spiritual path that grants animal-like supernatural traits.</Description>
+    <Unlock level="3">Spirit Seeker, Totem Spirit (Bear/Eagle/Wolf)</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>Life Domain</Name>
+    <ParentClass>Cleric</ParentClass>
+    <Description>Focused on the vibrant positive energy that sustains life.</Description>
+    <BonusProficiency>Heavy Armor</BonusProficiency>
+    <Unlock level="1">Disciple of Life</Unlock>
+    <SpellUnlocks>Bless, Cure Wounds</SpellUnlocks>
+  </Subclass>
+
+  <Subclass>
+    <Name>Champion</Name>
+    <ParentClass>Fighter</ParentClass>
+    <Description>Focuses on raw physical power and critical hits.</Description>
+    <Unlock level="3">Improved Critical</Unlock>
+    <Unlock level="7">Remarkable Athlete</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>Battle Master</Name>
+    <ParentClass>Fighter</ParentClass>
+    <Description>Uses combat maneuvers to control the battlefield.</Description>
+    <Unlock level="3">Combat Superiority, Student of War</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>Thief</Name>
+    <ParentClass>Rogue</ParentClass>
+    <Description>Burglars, bandits, and explorers who use agility.</Description>
+    <Unlock level="3">Fast Hands, Second-Story Work</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>Assassin</Name>
+    <ParentClass>Rogue</ParentClass>
+    <Description>Focuses on the art of the kill and infiltration.</Description>
+    <Unlock level="3">Bonus Proficiencies, Assassinate</Unlock>
+  </Subclass>
+
+  <Subclass>
+    <Name>School of Evocation</Name>
+    <ParentClass>Wizard</ParentClass>
+    <Description>Focuses on powerful elemental blasts.</Description>
+    <Unlock level="2">Evocation Savant, Sculpt Spells</Unlock>
+  </Subclass>
+</Subclasses>
