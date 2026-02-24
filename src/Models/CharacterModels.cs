@@ -7,7 +7,7 @@ namespace DndCharacterBuilder.Models
     public class Race
     {
         public string Id { get; set; } = "";
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = "Unknown";
         public string Source { get; set; } = "FPHb";
         public string Description { get; set; } = "";
         public Dictionary<string, int> AbilityBonuses { get; set; } = new Dictionary<string, int>();
@@ -53,7 +53,7 @@ namespace DndCharacterBuilder.Models
     public class CharacterClass
     {
         public string Id { get; set; } = "";
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = "Unknown";
         public string Source { get; set; } = "FPHb";
         public string Description { get; set; } = "";
         public string HitDie { get; set; } = "d8";

@@ -61,15 +61,18 @@ namespace DndCharacterBuilder.Services
                 else
                 {
                     // Legacy code path if file is old format
-                    foreach (var el in doc.Descendants("element"))
+                    if (doc.Root != null)
                     {
-                        var race = new Race {
-                            Id = el.Attribute("id")?.Value,
-                            Name = el.Attribute("name")?.Value,
-                            Source = el.Attribute("source")?.Value ?? "Homebrew",
-                            Description = el.Element("description")?.Value
-                        };
-                         races.Add(race);
+                        foreach (var el in doc.Descendants("element"))
+                        {
+                            var race = new Race {
+                                Id = el.Attribute("id")?.Value ?? "",
+                                Name = el.Attribute("name")?.Value ?? "Unknown",
+                                Source = el.Attribute("source")?.Value ?? "Homebrew",
+                                Description = el.Element("description")?.Value ?? ""
+                            };
+                             races.Add(race);
+                        }
                     }
                 }
             }
@@ -83,6 +86,8 @@ namespace DndCharacterBuilder.Services
             if (!File.Exists(path)) return subclasses;
 
             var doc = XDocument.Load(path);
+            if (doc.Root == null) return subclasses;
+
             foreach (var el in doc.Root.Elements("Subclass"))
             {
                 var subclass = new Subclass
@@ -194,9 +199,9 @@ namespace DndCharacterBuilder.Services
                         if (el.Attribute("type")?.Value != "Class") continue;
 
                         var charClass = new CharacterClass {
-                            Id = el.Attribute("id")?.Value,
-                            Name = el.Attribute("name")?.Value,
-                            Description = el.Element("description")?.Value,
+                            Id = el.Attribute("id")?.Value ?? "",
+                            Name = el.Attribute("name")?.Value ?? "Unknown",
+                            Description = el.Element("description")?.Value ?? "",
                             HitDie = el.Element("hit_die")?.Value ?? "d8",
                         };
                         

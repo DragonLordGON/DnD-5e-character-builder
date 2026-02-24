@@ -37,12 +37,12 @@ namespace DndCharacterBuilder
         // State
         private Character _activeCharacter = new Character();
         private string _currentLanguage = "en";
-        private double _currentGold = 100.0;
+        // private double _currentGold = 100.0;
         private bool _isHomebrewAllowed = false;
         private bool _isRaceLocked = false;
         private bool _isClassLocked = false;
         private bool _isSubclassLocked = false;
-        private Action _pendingOverlayAction;
+        private Action? _pendingOverlayAction;
 
         private void InitializeCharacter()
         {
