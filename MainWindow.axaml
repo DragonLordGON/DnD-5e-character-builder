@@ -1,0 +1,206 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:DndCharacterBuilder.Models"
+        x:Class="DndCharacterBuilder.MainWindow"
+        Width="1200"
+        Height="850"
+        Background="#121212"
+        Title="Nebula Character Builder"
+        mc:Ignorable="d">
+
+  <Grid>
+    <TabControl x:Name="MainModeTab">
+      <TabItem Header="Home">
+        <Grid ColumnDefinitions="2*,*" Margin="16">
+          <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center">
+            <TextBlock Text="WELCOME TO NEBULA" FontSize="34" Foreground="White" HorizontalAlignment="Center" />
+            <TextBlock Text="Start your adventure by creating a hero." Foreground="#AAAAAA" HorizontalAlignment="Center" />
+            <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" Click="NewCharacter_Click" />
+          </StackPanel>
+
+          <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
+            <StackPanel Spacing="8">
+              <TextBlock Text="CHARACTER VAULT" Foreground="White" FontSize="18" />
+              <Button Content="Refresh" HorizontalAlignment="Left" Click="RefreshVault_Click" />
+              <ListBox x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick" Height="560">
+                <ListBox.ItemTemplate>
+                  <DataTemplate DataType="models:Character">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Name}" Foreground="White" />
+                        <TextBlock Text="{Binding Level, StringFormat='Level {0}'}" Foreground="#AAAAAA" FontSize="12" />
+                      </StackPanel>
+                      <Button Grid.Column="1" Content="Open Folder" Click="OpenFolder_Click" />
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Builder">
+        <Grid RowDefinitions="Auto,*" Margin="10">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Back" Click="BackToMenu_Click" />
+            <Button Content="Race" Click="GoToRace_Click" />
+            <Button Content="Class" Click="GoToClass_Click" />
+            <Button Content="Subclass" Click="GoToSubclass_Click" />
+            <Button Content="Stats" Click="GoToStats_Click" />
+            <Button Content="Save" Click="SaveCharacter_Click" />
+          </StackPanel>
+
+          <TabControl Grid.Row="1" x:Name="BuilderTabControl">
+            <TabItem Header="Race">
+              <Grid ColumnDefinitions="2*,*" Margin="8">
+                <StackPanel Grid.Column="0" Spacing="8">
+                  <Grid>
+                    <TextBox x:Name="CharacterNameInput" TextChanged="CharacterNameInput_TextChanged" GotFocus="CharacterNameInput_GotFocus" LostFocus="CharacterNameInput_LostFocus" />
+                    <TextBlock x:Name="CharacterNamePlaceholder" Text="Character Name" Foreground="#808080" IsHitTestVisible="False" Margin="8,6,0,0" />
+                  </Grid>
+                  <TextBlock x:Name="RaceSelectionCount" Foreground="Orange" Text="0/1 Selected" />
+                  <ListBox x:Name="RaceList" Height="350" SelectionChanged="RaceList_SelectionChanged" DoubleTapped="RaceList_MouseDoubleClick" />
+                  <Button Content="Unlock Race" Click="UnlockRace_Click" HorizontalAlignment="Left" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="8">
+                  <TextBlock Text="Details" Foreground="White" />
+                  <TextBlock x:Name="RaceDescription" TextWrapping="Wrap" Foreground="#DDDDDD" />
+                  <StackPanel x:Name="RaceOptionsPanel" Spacing="4" IsVisible="False">
+                    <TextBlock Text="Ability Score Choices" Foreground="White" />
+                    <ItemsControl x:Name="ScoreSelectorsList">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
+                            <TextBlock Text="{Binding Label}" Width="130" />
+                            <ComboBox Width="120" ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption}" SelectionChanged="ScoreSelection_Changed" />
+                          </StackPanel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </StackPanel>
+              </Grid>
+            </TabItem>
+
+            <TabItem Header="Class">
+              <Grid ColumnDefinitions="2*,*" Margin="8">
+                <StackPanel Grid.Column="0" Spacing="8">
+                  <TextBlock x:Name="ClassSelectionCount" Foreground="Orange" Text="0/1 Selected" />
+                  <ListBox x:Name="ClassList" Height="360" SelectionChanged="ClassList_SelectionChanged" DoubleTapped="ClassList_MouseDoubleClick" />
+                  <Button Content="Unlock Class" Click="UnlockClass_Click" HorizontalAlignment="Left" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" x:Name="ClassDescription" Margin="12,0,0,0" TextWrapping="Wrap" Foreground="#DDDDDD" />
+              </Grid>
+            </TabItem>
+
+            <TabItem Header="Subclass">
+              <Grid ColumnDefinitions="2*,*" Margin="8">
+                <StackPanel Grid.Column="0" Spacing="8">
+                  <TextBlock x:Name="SubclassSelectionCount" Foreground="Orange" Text="0/1 Selected" />
+                  <TextBlock x:Name="NoSubclassMessage" Text="No subclasses available." Foreground="#AAAAAA" IsVisible="False" />
+                  <ListBox x:Name="SubclassList" Height="360" SelectionChanged="SubclassList_SelectionChanged" DoubleTapped="SubclassList_MouseDoubleClick" />
+                  <Button Content="Unlock Subclass" Click="UnlockSubclass_Click" HorizontalAlignment="Left" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" x:Name="SubclassDescription" Margin="12,0,0,0" TextWrapping="Wrap" Foreground="#DDDDDD" />
+              </Grid>
+            </TabItem>
+
+            <TabItem Header="Stats">
+              <Grid ColumnDefinitions="2*,*" Margin="8">
+                <StackPanel Grid.Column="0" Spacing="8">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Level" VerticalAlignment="Center" />
+                    <ComboBox x:Name="LevelSelector" Width="90" SelectionChanged="LevelSelector_SelectionChanged">
+                      <ComboBoxItem Content="1" IsSelected="True" />
+                      <ComboBoxItem Content="2" /><ComboBoxItem Content="3" /><ComboBoxItem Content="4" /><ComboBoxItem Content="5" />
+                      <ComboBoxItem Content="6" /><ComboBoxItem Content="7" /><ComboBoxItem Content="8" /><ComboBoxItem Content="9" /><ComboBoxItem Content="10" />
+                      <ComboBoxItem Content="11" /><ComboBoxItem Content="12" /><ComboBoxItem Content="13" /><ComboBoxItem Content="14" /><ComboBoxItem Content="15" />
+                      <ComboBoxItem Content="16" /><ComboBoxItem Content="17" /><ComboBoxItem Content="18" /><ComboBoxItem Content="19" /><ComboBoxItem Content="20" />
+                    </ComboBox>
+                    <CheckBox x:Name="HomebrewToggle" Content="Homebrew" Click="HomebrewToggle_Click" />
+                    <Button Content="Language" Click="LanguageToggle_Click" />
+                    <ComboBox Width="130" SelectionChanged="CategoryFilter_SelectionChanged" />
+                  </StackPanel>
+
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Points Remaining:" />
+                    <TextBlock x:Name="PointsRemainingLabel" Text="27" Foreground="Orange" />
+                  </StackPanel>
+
+                  <Grid ColumnDefinitions="70,40,40,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                    <TextBlock Grid.Row="0" Text="STR" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="StrValue" />
+                    <TextBlock Grid.Row="0" Grid.Column="2" x:Name="StrBonus" />
+                    <TextBlock Grid.Row="0" Grid.Column="3" x:Name="StrMod" />
+                    <Button Grid.Row="0" Grid.Column="4" Content="+" Tag="STR" Click="StatUp_Click" />
+                    <Button Grid.Row="0" Grid.Column="5" Content="-" Tag="STR" Click="StatDown_Click" />
+
+                    <TextBlock Grid.Row="1" Text="DEX" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="DexValue" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" x:Name="DexBonus" />
+                    <TextBlock Grid.Row="1" Grid.Column="3" x:Name="DexMod" />
+                    <Button Grid.Row="1" Grid.Column="4" Content="+" Tag="DEX" Click="StatUp_Click" />
+                    <Button Grid.Row="1" Grid.Column="5" Content="-" Tag="DEX" Click="StatDown_Click" />
+
+                    <TextBlock Grid.Row="2" Text="CON" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ConValue" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" x:Name="ConBonus" />
+                    <TextBlock Grid.Row="2" Grid.Column="3" x:Name="ConMod" />
+                    <Button Grid.Row="2" Grid.Column="4" Content="+" Tag="CON" Click="StatUp_Click" />
+                    <Button Grid.Row="2" Grid.Column="5" Content="-" Tag="CON" Click="StatDown_Click" />
+
+                    <TextBlock Grid.Row="3" Text="INT" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="IntValue" />
+                    <TextBlock Grid.Row="3" Grid.Column="2" x:Name="IntBonus" />
+                    <TextBlock Grid.Row="3" Grid.Column="3" x:Name="IntMod" />
+                    <Button Grid.Row="3" Grid.Column="4" Content="+" Tag="INT" Click="StatUp_Click" />
+                    <Button Grid.Row="3" Grid.Column="5" Content="-" Tag="INT" Click="StatDown_Click" />
+
+                    <TextBlock Grid.Row="4" Text="WIS" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" x:Name="WisValue" />
+                    <TextBlock Grid.Row="4" Grid.Column="2" x:Name="WisBonus" />
+                    <TextBlock Grid.Row="4" Grid.Column="3" x:Name="WisMod" />
+                    <Button Grid.Row="4" Grid.Column="4" Content="+" Tag="WIS" Click="StatUp_Click" />
+                    <Button Grid.Row="4" Grid.Column="5" Content="-" Tag="WIS" Click="StatDown_Click" />
+
+                    <TextBlock Grid.Row="5" Text="CHA" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" x:Name="ChaValue" />
+                    <TextBlock Grid.Row="5" Grid.Column="2" x:Name="ChaBonus" />
+                    <TextBlock Grid.Row="5" Grid.Column="3" x:Name="ChaMod" />
+                    <Button Grid.Row="5" Grid.Column="4" Content="+" Tag="CHA" Click="StatUp_Click" />
+                    <Button Grid.Row="5" Grid.Column="5" Content="-" Tag="CHA" Click="StatDown_Click" />
+                  </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                  <Border BorderBrush="#333333" BorderThickness="1" Height="280" Width="240" Background="#1e1e1e" DoubleTapped="Portrait_Click">
+                    <Image x:Name="PortraitBrushHeader" Stretch="UniformToFill" />
+                  </Border>
+                  <TextBlock Text="Double-click portrait to change." Foreground="#AAAAAA" />
+                </StackPanel>
+              </Grid>
+            </TabItem>
+          </TabControl>
+        </Grid>
+      </TabItem>
+    </TabControl>
+
+    <Border x:Name="OverlayBlur" Background="#AA000000" IsVisible="False">
+      <Border Width="520" CornerRadius="8" Padding="16" Background="#1e1e1e" BorderBrush="#3a3a3a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Spacing="10">
+          <TextBlock x:Name="OverlayTitle" FontSize="20" Foreground="White" />
+          <TextBlock x:Name="OverlayMessage" TextWrapping="Wrap" Foreground="#DDDDDD" />
+          <TextBox x:Name="OverlayInput" IsVisible="False" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button x:Name="OverlayAltBtn" Content="SIMPLE" IsVisible="False" Click="SimplePreset_Click" />
+            <Button x:Name="OverlayConfirmBtn" Content="OK" Click="ConfirmOverlay_Click" />
+            <Button Content="Close" Click="CloseOverlay_Click" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+  </Grid>
+</Window>

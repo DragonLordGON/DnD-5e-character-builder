@@ -1,21 +1,35 @@
-using System.Windows;
-using System.Windows.Threading;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DndCharacterBuilder
 {
     public partial class App : Application
     {
-        private string _logDir;
+        private readonly string _logDir;
 
         public App()
         {
             _logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
             CleanOldLogs();
 
-            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        public override void Initialize() => AvaloniaXamlLoader.Load(this);
+
+        public override void OnFrameworkInitializationCompleted()
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = new MainWindow();
+            }
+
+            base.OnFrameworkInitializationCompleted();
         }
 
         private void CleanOldLogs()
@@ -48,18 +62,15 @@ namespace DndCharacterBuilder
             catch { }
         }
 
-        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
         {
-            LogCrash(e.Exception, "Dispatcher");
-            MessageBox.Show($"UNHANDLED EXCEPTION: {e.Exception.Message}\nCheck logs folder for details.", "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            e.Handled = true;
-            Current.Shutdown();
+            LogCrash(e.Exception, "TaskScheduler");
+            e.SetObserved();
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object? sender, UnhandledExceptionEventArgs e)
         {
              LogCrash(e.ExceptionObject, "AppDomain");
-             MessageBox.Show($"CRITICAL ERROR: {e.ExceptionObject}", "Crash", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

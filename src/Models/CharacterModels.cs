@@ -25,9 +25,6 @@ namespace DndCharacterBuilder.Models
         // UI Helpers
         public bool IsSelected { get; set; }
         public bool IsDisabled { get; set; }
-        public System.Windows.Visibility SelectedVisibility => IsSelected ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-        public System.Windows.Media.Brush BackgroundColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(9, 71, 113)) : System.Windows.Media.Brushes.Transparent;
-        public System.Windows.Media.Brush BorderColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 122, 204)) : System.Windows.Media.Brushes.Transparent;
     }
 
     public class LevelUnlock
@@ -71,9 +68,6 @@ namespace DndCharacterBuilder.Models
         // UI Helpers
         public bool IsSelected { get; set; }
         public bool IsDisabled { get; set; }
-        public System.Windows.Visibility SelectedVisibility => IsSelected ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-        public System.Windows.Media.Brush BackgroundColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(9, 71, 113)) : System.Windows.Media.Brushes.Transparent;
-        public System.Windows.Media.Brush BorderColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 122, 204)) : System.Windows.Media.Brushes.Transparent;
     }
 
     public class Subclass
@@ -87,9 +81,6 @@ namespace DndCharacterBuilder.Models
         // UI Helpers
         public bool IsSelected { get; set; }
         public bool IsDisabled { get; set; }
-        public System.Windows.Visibility SelectedVisibility => IsSelected ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-        public System.Windows.Media.Brush BackgroundColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(9, 71, 113)) : System.Windows.Media.Brushes.Transparent;
-        public System.Windows.Media.Brush BorderColor => IsSelected ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 122, 204)) : System.Windows.Media.Brushes.Transparent;
     }
 
     // Master Item from Library

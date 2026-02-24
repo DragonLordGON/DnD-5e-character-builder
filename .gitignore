@@ -4,6 +4,7 @@ _ReSharper*/
 *.user
 *.userosscache
 *.sln.docstates
+*.sln
 *.suo
 *.userprefs
 *.usertasks
@@ -35,3 +36,6 @@ $RECYCLE.BIN/
 
 # Logs
 *.log
+
+# Publish output
+publish/

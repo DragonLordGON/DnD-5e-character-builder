@@ -2,13 +2,14 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using DndCharacterBuilder.Models;
 using DndCharacterBuilder.Services;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace DndCharacterBuilder
         public string? SelectedOption { get;set; } 
     }
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Avalonia.Controls.Window
     {
         // Data & Services
         private List<Race> _allRaces = new List<Race>();
@@ -60,7 +61,7 @@ namespace DndCharacterBuilder
             if (CharacterNameInput != null) 
             {
                  CharacterNameInput.Text = "";
-                 CharacterNamePlaceholder.Visibility = Visibility.Visible;
+                 CharacterNamePlaceholder.IsVisible = true;
             }
 
             _isRaceLocked = false;
@@ -82,7 +83,7 @@ namespace DndCharacterBuilder
             if (ClassDescription != null) ClassDescription.Text = "Please select a class to see details.";
             if (SubclassDescription != null) SubclassDescription.Text = "Please select a subclass to see details.";
 
-            if (RaceOptionsPanel != null) RaceOptionsPanel.Visibility = Visibility.Collapsed;
+            if (RaceOptionsPanel != null) RaceOptionsPanel.IsVisible = false;
 
             // Reset UI States
             UpdateRaceUIState();
@@ -141,26 +142,26 @@ namespace DndCharacterBuilder
 
         private void CharacterNameInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CharacterNamePlaceholder.Visibility = string.IsNullOrEmpty(CharacterNameInput.Text) ? Visibility.Visible : Visibility.Collapsed;
-            _activeCharacter.Name = CharacterNameInput.Text;
+            CharacterNamePlaceholder.IsVisible = string.IsNullOrEmpty(CharacterNameInput.Text);
+            _activeCharacter.Name = CharacterNameInput.Text ?? string.Empty;
         }
 
         private void CharacterNameInput_GotFocus(object sender, RoutedEventArgs e)
         {
-            CharacterNamePlaceholder.Visibility = Visibility.Collapsed;
+            CharacterNamePlaceholder.IsVisible = false;
         }
 
         private void CharacterNameInput_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(CharacterNameInput.Text))
             {
-                CharacterNamePlaceholder.Visibility = Visibility.Visible;
+                CharacterNamePlaceholder.IsVisible = true;
             }
         }
         
         // --- VAULT INTERACTIONS ---
 
-        private void VaultItem_DoubleClick(object sender, MouseButtonEventArgs e)
+        private void VaultItem_DoubleClick(object sender, TappedEventArgs e)
         {
              // Placeholder for loading logic. 
              // Ideally we would load the XML, hydrate the objects (find race/class by name in loaded lists), set _activeCharacter, and go to builder.
@@ -173,18 +174,43 @@ namespace DndCharacterBuilder
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is string charName)
+            if (sender is Button btn && btn.DataContext is Character character)
             {
-                string folderPath = _saveService.GetCharacterFolder(charName);
+                string folderPath = _saveService.GetCharacterFolder(character.Name);
                 if (Directory.Exists(folderPath))
+                {
+                    OpenFolder(folderPath);
+                }
+            }
+        }
+
+        private static void OpenFolder(string folderPath)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = folderPath,
-                        UseShellExecute = true,
-                        Verb = "open"
+                        UseShellExecute = true
                     });
+                    return;
                 }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", folderPath);
+                    return;
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", folderPath);
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -201,7 +227,7 @@ namespace DndCharacterBuilder
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Critical Error: {ex.Message}", "Data Load Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowOverlay("DATA LOAD FAILURE", $"Critical error: {ex.Message}", null);
             }
             RefreshUI();
         }
@@ -242,7 +268,7 @@ namespace DndCharacterBuilder
             foreach(var key in _activeCharacter.BaseStats.Keys.ToList()) _activeCharacter.BaseStats[key] = 10;
 
             UpdateStatsUI();
-            OverlayBlur.Visibility = Visibility.Collapsed;
+            OverlayBlur.IsVisible = false;
 
             MainModeTab.SelectedIndex = 1;
             BuilderTabControl.SelectedIndex = 0; // Start at Race Selection
@@ -250,7 +276,7 @@ namespace DndCharacterBuilder
 
         private void LevelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-             if (LevelSelector.SelectedItem is ComboBoxItem item && int.TryParse(item.Content.ToString(), out int lvl))
+             if (LevelSelector.SelectedItem is ComboBoxItem item && int.TryParse(item.Content?.ToString(), out int lvl))
              {
                  _activeCharacter.Level = lvl;
                  UpdateLevelUnlocks();
@@ -430,7 +456,7 @@ namespace DndCharacterBuilder
             int remaining = budget - spent;
 
             PointsRemainingLabel.Text = remaining.ToString();
-            PointsRemainingLabel.Foreground = remaining < 0 ? Brushes.Crimson : (SolidColorBrush)FindResource("AccentColor");
+            PointsRemainingLabel.Foreground = remaining < 0 ? Brushes.Crimson : new SolidColorBrush(Color.Parse("#007ACC"));
 
             UpdateStatLine("STR", StrValue, StrBonus, StrMod);
             UpdateStatLine("DEX", DexValue, DexBonus, DexMod);
@@ -481,12 +507,12 @@ namespace DndCharacterBuilder
             if (totalBonus > 0)
             {
                 bonusLbl.Text = $"+{totalBonus}";
-                bonusLbl.Visibility = Visibility.Visible;
+                bonusLbl.IsVisible = true;
                 valLbl.Foreground = Brushes.LightGreen; 
             }
             else
             {
-                bonusLbl.Visibility = Visibility.Collapsed;
+                bonusLbl.IsVisible = false;
                 valLbl.Foreground = Brushes.White;
             }
 
@@ -504,14 +530,14 @@ namespace DndCharacterBuilder
             OverlayTitle.Text = title;
             OverlayMessage.Text = message;
             OverlayInput.Text = defaultInput;
-            OverlayInput.Visibility = showInput ? Visibility.Visible : Visibility.Collapsed;
-            OverlayAltBtn.Visibility = showSimple ? Visibility.Visible : Visibility.Collapsed;
+            OverlayInput.IsVisible = showInput;
+            OverlayAltBtn.IsVisible = showSimple;
             _pendingOverlayAction = onConfirm;
-            OverlayBlur.Visibility = Visibility.Visible;
+            OverlayBlur.IsVisible = true;
             if (onConfirm == null) 
             {
                 OverlayConfirmBtn.Content = "OK";
-                OverlayConfirmBtn.Visibility = Visibility.Visible; 
+                OverlayConfirmBtn.IsVisible = true; 
             }
             else 
             {
@@ -524,7 +550,7 @@ namespace DndCharacterBuilder
             // Removed legacy class/race image update logic
         }
 
-        private void Portrait_Click(object sender, MouseButtonEventArgs e)
+        private async void Portrait_Click(object sender, TappedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(_activeCharacter.Name))
             {
@@ -532,24 +558,44 @@ namespace DndCharacterBuilder
                 return;
             }
 
-            var dialog = new OpenFileDialog
+            if (StorageProvider == null)
             {
-                Filter = "Image Files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
-                Title = "Choose Character Portrait"
-            };
+                ShowOverlay("ERROR", "File picker is not available on this platform.", null);
+                return;
+            }
 
-            if (dialog.ShowDialog() == true)
+            var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Choose Character Portrait",
+                AllowMultiple = false,
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new("Image Files")
+                    {
+                        Patterns = new[] { "*.jpg", "*.jpeg", "*.png" }
+                    }
+                }
+            });
+
+            if (files.Count > 0)
             {
                 try
                 {
+                    var sourcePath = files[0].TryGetLocalPath();
+                    if (string.IsNullOrWhiteSpace(sourcePath))
+                    {
+                        ShowOverlay("ERROR", "Selected file is not a local path.", null);
+                        return;
+                    }
+
                     string charFolder = _saveService.GetCharacterFolder(_activeCharacter.Name);
                     string imageFolder = Path.Combine(charFolder, "Images");
                     if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
 
-                    string fileName = "portrait" + Path.GetExtension(dialog.FileName);
+                    string fileName = "portrait" + Path.GetExtension(sourcePath);
                     string destPath = Path.Combine(imageFolder, fileName);
 
-                    File.Copy(dialog.FileName, destPath, true);
+                    File.Copy(sourcePath, destPath, true);
                     _activeCharacter.PortraitPath = destPath;
 
                     UpdatePortraitUI();
@@ -565,29 +611,25 @@ namespace DndCharacterBuilder
         {
             if (string.IsNullOrEmpty(_activeCharacter.PortraitPath) || !File.Exists(_activeCharacter.PortraitPath))
             {
-                PortraitBrushHeader.ImageSource = null;
+                PortraitBrushHeader.Source = null;
                 return;
             }
 
             try
             {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(_activeCharacter.PortraitPath, UriKind.Absolute);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                PortraitBrushHeader.ImageSource = bitmap;
+                using var stream = File.OpenRead(_activeCharacter.PortraitPath);
+                PortraitBrushHeader.Source = new Bitmap(stream);
             }
-            catch { PortraitBrushHeader.ImageSource = null; }
+            catch { PortraitBrushHeader.Source = null; }
         }
 
         private void ConfirmOverlay_Click(object sender, RoutedEventArgs e)
         {
             _pendingOverlayAction?.Invoke();
-            OverlayBlur.Visibility = Visibility.Collapsed;
+            OverlayBlur.IsVisible = false;
         }
 
-        private void CloseOverlay_Click(object sender, RoutedEventArgs e) => OverlayBlur.Visibility = Visibility.Collapsed;
+        private void CloseOverlay_Click(object sender, RoutedEventArgs e) => OverlayBlur.IsVisible = false;
 
         // --- SELECTION LOGIC ---
 
@@ -601,7 +643,7 @@ namespace DndCharacterBuilder
                 // Show/Hide Options based on ScoreSelectCount
                 if (race.ScoreSelectCount > 0)
                 {
-                    RaceOptionsPanel.Visibility = Visibility.Visible;
+                    RaceOptionsPanel.IsVisible = true;
 
                     // Initialize selection list in Race model if empty
                     if (race.SelectedScores == null) race.SelectedScores = new List<string>();
@@ -621,7 +663,7 @@ namespace DndCharacterBuilder
                 }
                 else
                 {
-                    RaceOptionsPanel.Visibility = Visibility.Collapsed;
+                    RaceOptionsPanel.IsVisible = false;
                     ScoreSelectorsList.ItemsSource = null;
                 }
             }
@@ -633,7 +675,7 @@ namespace DndCharacterBuilder
             if (sender is not ComboBox changedCb) return;
 
             // Prevent infinite loop from re-binding
-            if (ScoreSelectorsList.Items.IsEmpty) return;
+            if (ScoreSelectorsList.ItemsSource == null) return;
             
             var changedSelector = changedCb.DataContext as ScoreSelector;
             if (changedSelector == null) return;
@@ -685,7 +727,7 @@ namespace DndCharacterBuilder
             if (_activeCharacter.Race == race) UpdateStatsUI();
         }
 
-        public void RaceList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public void RaceList_MouseDoubleClick(object sender, TappedEventArgs e)
         {
             if (RaceList.SelectedItem is Race race && !_isRaceLocked)
             {
@@ -722,7 +764,8 @@ namespace DndCharacterBuilder
                      r.IsSelected = (_isRaceLocked && _activeCharacter.Race == r);
                      r.IsDisabled = (_isRaceLocked && _activeCharacter.Race != r);
                  }
-                 RaceList.Items.Refresh();
+                 RaceList.ItemsSource = null;
+                 RaceList.ItemsSource = currentList.ToList();
              }
              if (RaceSelectionCount != null)
              {
@@ -752,7 +795,7 @@ namespace DndCharacterBuilder
             }
         }
 
-        public void ClassList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public void ClassList_MouseDoubleClick(object sender, TappedEventArgs e)
         {
             if (ClassList.SelectedItem is CharacterClass cls && !_isClassLocked)
             {
@@ -799,7 +842,8 @@ namespace DndCharacterBuilder
                      c.IsSelected = (_isClassLocked && _activeCharacter.Class == c);
                      c.IsDisabled = (_isClassLocked && _activeCharacter.Class != c);
                  }
-                 ClassList.Items.Refresh();
+                 ClassList.ItemsSource = null;
+                 ClassList.ItemsSource = currentList.ToList();
              }
              if (ClassSelectionCount != null)
              {
@@ -813,8 +857,8 @@ namespace DndCharacterBuilder
             if (_activeCharacter.Class == null) 
             {
                 SubclassList.ItemsSource = null;
-                SubclassSelectionCount.Visibility = Visibility.Collapsed;
-                NoSubclassMessage.Visibility = Visibility.Collapsed;
+                SubclassSelectionCount.IsVisible = false;
+                NoSubclassMessage.IsVisible = false;
                 return;
             }
 
@@ -823,8 +867,8 @@ namespace DndCharacterBuilder
                 .ToList();
 
             SubclassList.ItemsSource = availableSubclasses;
-            SubclassSelectionCount.Visibility = Visibility.Visible;
-            NoSubclassMessage.Visibility = availableSubclasses.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            SubclassSelectionCount.IsVisible = true;
+            NoSubclassMessage.IsVisible = availableSubclasses.Count == 0;
 
             int selectedCount = availableSubclasses.Count(s => s.IsSelected);
             SubclassSelectionCount.Text = $"{selectedCount}/1 Selected";
@@ -839,7 +883,7 @@ namespace DndCharacterBuilder
             }
         }
 
-        public void SubclassList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public void SubclassList_MouseDoubleClick(object sender, TappedEventArgs e)
         {
             if (SubclassList.SelectedItem is Subclass sub && !_isSubclassLocked)
             {
@@ -876,7 +920,8 @@ namespace DndCharacterBuilder
                      s.IsSelected = (_isSubclassLocked && _activeCharacter.Subclass == s);
                      s.IsDisabled = (_isSubclassLocked && _activeCharacter.Subclass != s);
                  }
-                 SubclassList.Items.Refresh();
+                 SubclassList.ItemsSource = null;
+                 SubclassList.ItemsSource = currentList.ToList();
              }
              if (SubclassSelectionCount != null)
              {
@@ -896,16 +941,6 @@ namespace DndCharacterBuilder
         private void HomebrewToggle_Click(object sender, RoutedEventArgs e) { _isHomebrewAllowed = HomebrewToggle.IsChecked ?? false; UpdateStatsUI(); RefreshUI(); }
         private void CategoryFilter_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
 
-        private T? FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
-        {
-            if (parent == null) return null;
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++) {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T t && child is FrameworkElement fe && fe.Name == childName) return t;
-                var result = FindChild<T>(child, childName);
-                if (result != null) return result;
-            }
-            return null;
-        }
+        
     }
 }
