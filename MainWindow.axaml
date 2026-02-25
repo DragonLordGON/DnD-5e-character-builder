@@ -5,55 +5,73 @@
         xmlns:models="clr-namespace:DndCharacterBuilder.Models"
         x:Class="DndCharacterBuilder.MainWindow"
         Width="1200"
-        Height="850"
+        Height="750"
         Background="{StaticResource Brush.Background}"
         Title="Nebula Character Builder"
         mc:Ignorable="d">
 
   <Grid>
-    <TabControl x:Name="MainModeTab">
-      <TabItem>
-        <Grid ColumnDefinitions="2*,*" Margin="16">
-          <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="WELCOME TO NEBULA" FontSize="34" Foreground="White" HorizontalAlignment="Center" />
-            <TextBlock Text="Start your adventure by creating a hero." Foreground="#AAAAAA" HorizontalAlignment="Center" />
-            <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" Click="NewCharacter_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-          </StackPanel>
+    <Carousel x:Name="MainModeTab">
+      <Grid ColumnDefinitions="3*,*">
+        <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center">
+          <TextBlock Text="WELCOME TO NEBULA" FontSize="34" FontWeight="12" Foreground="{StaticResource text.brush}" HorizontalAlignment="Center" />
+          <TextBlock Text="Start your adventure by creating a hero." Foreground="{StaticResource text.secondary.brush}" HorizontalAlignment="Center" />
+            <Button Width="380" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Click="NewCharacter_Click" Background="{StaticResource bg.alt.brush}" BorderBrush="#333333" BorderThickness="1" CornerRadius="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="16">
+                <Path Fill="{StaticResource accent.brush}" Width="32" Height="32" Stretch="Uniform" Data="M18 12.998h-5v5a1 1 0 0 1-2 0v-5H6a1 1 0 0 1 0-2h5v-5a1 1 0 0 1 2 0v5h5a1 1 0 0 1 0 2" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="NEW CHARACTER" FontWeight="Bold" FontSize="16" Foreground="{StaticResource text.brush}" />
+                  <TextBlock Text="Create a hero from scratch" FontSize="12" Foreground="{StaticResource text.secondary.brush}" />
+                </StackPanel>
+              </StackPanel>
+            </Button>
+        </StackPanel>
 
-          <Border Grid.Column="1" Padding="" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
-            <StackPanel>
-              <TextBlock Text="CHARACTER VAULT" Foreground="White" FontSize="18" />
-              <Button Content="Refresh" HorizontalAlignment="Left" Click="RefreshVault_Click" />
-              <ListBox x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick" Height="560">
-                <ListBox.ItemTemplate>
-                  <DataTemplate DataType="models:Character">
-                    <Grid ColumnDefinitions="*,Auto" Margin="0,4">
-                      <StackPanel>
-                        <TextBlock Text="{Binding Name}" Foreground="White" />
-                        <TextBlock Text="{Binding Level, StringFormat='Level {0}'}" Foreground="#AAAAAA" FontSize="12" />
-                      </StackPanel>
-                      <Button Grid.Column="1" Content="Open Folder" Click="OpenFolder_Click" />
-                    </Grid>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-            </StackPanel>
-          </Border>
-        </Grid>
-      </TabItem>
+        <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1,0,0,0" Background="{StaticResource bg.alt.brush}">
+          <Grid RowDefinitions="Auto,*">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+              <TextBlock Grid.Column="0" Text="CHARACTER VAULT" Foreground="{StaticResource text.brush}" FontSize="12" FontWeight="Bold" VerticalAlignment="Center" />
+              <Button Grid.Column="1" 
+                      HorizontalAlignment="Right" 
+                      Click="RefreshVault_Click" 
+                      Padding="4"
+                      Background="Transparent"
+                      BorderThickness="0">
+                <Path Fill="{StaticResource text.brush}" Width="16" Height="16" Stretch="Uniform"
+                      Data="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z" />
+              </Button>
+            </Grid>
+            <ListBox Grid.Row="1" x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="models:Character">
+                  <Grid ColumnDefinitions="*,Auto" Margin="0,4">
+                    <StackPanel>
+                      <TextBlock Text="{Binding Name}" Foreground="{StaticResource text.brush}" />
+                      <TextBlock Text="{Binding Level, StringFormat='Level {0}'}" Foreground="{StaticResource text.secondary.brush}" FontSize="12" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Open Folder" Click="OpenFolder_Click" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" >
+                      <Path Fill="{StaticResource text.brush}" Width="16" Height="16" Stretch="Uniform"
+                            Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8z" />
+                    </Button>
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+        </Border>
+      </Grid>
 
-      <TabItem>
-        <Grid RowDefinitions="Auto,*" Margin="10">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Content="Back" Click="BackToMenu_Click" />
-            <Button Content="Race" Click="GoToRace_Click" />
-            <Button Content="Class" Click="GoToClass_Click" />
-            <Button Content="Subclass" Click="GoToSubclass_Click" />
-            <Button Content="Stats" Click="GoToStats_Click" />
-            <Button Content="Save" Click="SaveCharacter_Click" />
-          </StackPanel>
+      <Grid RowDefinitions="Auto,*" Margin="10">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="Back" Click="BackToMenu_Click" />
+          <Button Content="Race" Click="GoToRace_Click" />
+          <Button Content="Class" Click="GoToClass_Click" />
+          <Button Content="Subclass" Click="GoToSubclass_Click" />
+          <Button Content="Stats" Click="GoToStats_Click" />
+          <Button Content="Save" Click="SaveCharacter_Click" />
+        </StackPanel>
 
-          <TabControl Grid.Row="1" x:Name="BuilderTabControl">
+        <TabControl Grid.Row="1" x:Name="BuilderTabControl">
             <TabItem Header="Race">
               <Grid ColumnDefinitions="2*,*" Margin="8">
                 <StackPanel Grid.Column="0" Spacing="8">
@@ -185,8 +203,7 @@
             </TabItem>
           </TabControl>
         </Grid>
-      </TabItem>
-    </TabControl>
+      </Carousel>
 
     <Border x:Name="OverlayBlur" Background="#AA000000" IsVisible="False">
       <Border Width="520" CornerRadius="8" Padding="16" Background="#1e1e1e" BorderBrush="#3a3a3a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">

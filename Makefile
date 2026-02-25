@@ -19,7 +19,7 @@ help:
 	@echo "  make publish-all             - Publie Linux + Windows autonomes"
 
 test:
-	dotnet clean $(PROJECT) && dotnet build $(PROJECT) -c $(CONFIG) && dotnet run --project $(PROJECT) -c $(CONFIG)
+	dotnet build $(PROJECT) -c $(CONFIG) && dotnet run --project $(PROJECT) -c $(CONFIG)
 
 restore:
 	dotnet restore $(PROJECT)
