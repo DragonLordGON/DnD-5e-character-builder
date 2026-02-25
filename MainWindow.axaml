@@ -12,7 +12,7 @@
 
   <Grid>
     <TabControl x:Name="MainModeTab">
-      <TabItem Header="Home">
+      <TabItem>
         <Grid ColumnDefinitions="2*,*" Margin="16">
           <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center">
             <TextBlock Text="WELCOME TO NEBULA" FontSize="34" Foreground="White" HorizontalAlignment="Center" />
@@ -42,7 +42,7 @@
         </Grid>
       </TabItem>
 
-      <TabItem Header="Builder">
+      <TabItem>
         <Grid RowDefinitions="Auto,*" Margin="10">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Button Content="Back" Click="BackToMenu_Click" />

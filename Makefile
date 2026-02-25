@@ -5,7 +5,7 @@ RUNTIME ?= linux-x64
 PUBLISH_DIR := publish
 PUBLISH_PROPS := -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 
-.PHONY: help restore build run clean publish publish-linux publish-win publish-all
+.PHONY: help restore build run clean publish publish-linux publish-win publish-all test
 
 help:
 	@echo "Targets disponibles:"
@@ -17,6 +17,9 @@ help:
 	@echo "  make publish-linux           - Publie Linux autonome"
 	@echo "  make publish-win             - Publie Windows autonome"
 	@echo "  make publish-all             - Publie Linux + Windows autonomes"
+
+test:
+	dotnet clean $(PROJECT) && dotnet build $(PROJECT) -c $(CONFIG) && dotnet run --project $(PROJECT) -c $(CONFIG)
 
 restore:
 	dotnet restore $(PROJECT)
