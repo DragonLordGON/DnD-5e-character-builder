@@ -20,8 +20,8 @@
             <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" Click="NewCharacter_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
           </StackPanel>
 
-          <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
-            <StackPanel Spacing="8">
+          <Border Grid.Column="1" Padding="" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
+            <StackPanel>
               <TextBlock Text="CHARACTER VAULT" Foreground="White" FontSize="18" />
               <Button Content="Refresh" HorizontalAlignment="Left" Click="RefreshVault_Click" />
               <ListBox x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick" Height="560">
