@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="64"
+             x:Class="DndCharacterBuilder.Controls.DiceControl"
+             Width="64" Height="64">
+    <Panel Name="MainPanel">
+        <!-- We use a Border or Panel to represent the dice if images are missing -->
+        <Border Name="DiceBody"
+                Width="50" Height="50"
+                Background="White"
+                BorderBrush="Black"
+                BorderThickness="2"
+                CornerRadius="8"
+                RenderTransformOrigin="50%,50%">
+            <Border.RenderTransform>
+                <RotateTransform x:Name="DiceRotation" Angle="0"/>
+            </Border.RenderTransform>
+            <TextBlock Name="DiceText"
+                       Text="?"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="24"
+                       FontWeight="Bold"/>
+        </Border>
+        
+        <!-- Future: Replace Border with Image for GIF/Sprite animation -->
+        <!-- 
+        <Image Name="DiceImage" 
+               Width="64" Height="64"
+               RenderTransformOrigin="50%,50%">
+            <Image.RenderTransform>
+                <RotateTransform Name="DiceRotation" />
+            </Image.RenderTransform>
+        </Image> 
+        -->
+    </Panel>
+</UserControl>

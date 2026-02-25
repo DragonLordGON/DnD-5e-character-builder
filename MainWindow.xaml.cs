@@ -13,6 +13,7 @@ using Avalonia.Platform.Storage;
 using DndCharacterBuilder.Models;
 using DndCharacterBuilder.Services;
 using System.Collections.Generic;
+using DndCharacterBuilder.Controls;
 
 namespace DndCharacterBuilder
 {
@@ -68,16 +69,6 @@ namespace DndCharacterBuilder
             _isClassLocked = false;
             _isSubclassLocked = false;
 
-            // Reset all database instances visual states
-            if (_allRaces != null) foreach (var r in _allRaces) { r.IsSelected = false; r.IsDisabled = false; }
-            if (_allClasses != null) foreach (var c in _allClasses) { c.IsSelected = false; c.IsDisabled = false; }
-            if (_allSubclasses != null) foreach (var s in _allSubclasses) { s.IsSelected = false; s.IsDisabled = false; }
-
-            // Clear internal selections
-            if (RaceList != null) RaceList.SelectedItem = null;
-            if (ClassList != null) ClassList.SelectedItem = null;
-            if (SubclassList != null) SubclassList.SelectedItem = null;
-
             // Clear Descriptions
             if (RaceDescription != null) RaceDescription.Text = "Please select a race to see details.";
             if (ClassDescription != null) ClassDescription.Text = "Please select a class to see details.";
@@ -91,6 +82,26 @@ namespace DndCharacterBuilder
             UpdateSubclassOptions();
             UpdateStatsUI();
             UpdatePortraitUI();
+        }
+
+        private void RollDice(int sides, int result)
+        {
+            var dice = new DiceControl();
+            DiceArena.Children.Add(dice);
+            
+            // Start position: middle of the screen
+            Canvas.SetLeft(dice, (this.Bounds.Width / 2) - (64 / 2));
+            Canvas.SetTop(dice, (this.Bounds.Height / 2) - (64 / 2));
+            
+            dice.Roll(result, sides, DiceArena.Bounds);
+        }
+
+        private void TestRoll_Click(object? sender, RoutedEventArgs e)
+        {
+            // Simulate a d20 roll
+            var random = new Random();
+            int result = random.Next(1, 21);
+            RollDice(20, result);
         }
 
         public MainWindow()

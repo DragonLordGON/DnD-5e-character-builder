@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:DndCharacterBuilder.Models"
+        xmlns:controls="clr-namespace:DndCharacterBuilder.Controls"
         x:Class="DndCharacterBuilder.MainWindow"
         Width="1200"
         Height="850"
@@ -18,6 +19,7 @@
             <TextBlock Text="WELCOME TO NEBULA" FontSize="34" Foreground="White" HorizontalAlignment="Center" />
             <TextBlock Text="Start your adventure by creating a hero." Foreground="#AAAAAA" HorizontalAlignment="Center" />
             <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" Click="NewCharacter_Click" />
+            <Button Content="TEST ROLL D20" Width="260" Height="40" HorizontalAlignment="Center" Click="TestRoll_Click" Margin="0,8,0,0"/>
           </StackPanel>
 
           <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
@@ -202,5 +204,7 @@
         </StackPanel>
       </Border>
     </Border>
+
+    <Canvas Name="DiceArena" IsHitTestVisible="False" />
   </Grid>
 </Window>
