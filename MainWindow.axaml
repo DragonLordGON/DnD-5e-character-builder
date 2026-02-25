@@ -6,7 +6,7 @@
         x:Class="DndCharacterBuilder.MainWindow"
         Width="1200"
         Height="850"
-        Background="#121212"
+        Background="{StaticResource Brush.Background}"
         Title="Nebula Character Builder"
         mc:Ignorable="d">
 
@@ -17,7 +17,7 @@
           <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center">
             <TextBlock Text="WELCOME TO NEBULA" FontSize="34" Foreground="White" HorizontalAlignment="Center" />
             <TextBlock Text="Start your adventure by creating a hero." Foreground="#AAAAAA" HorizontalAlignment="Center" />
-            <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center" Click="NewCharacter_Click" />
+            <Button Content="NEW CHARACTER" Width="260" Height="56" HorizontalAlignment="Center" Click="NewCharacter_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
           </StackPanel>
 
           <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1" CornerRadius="6">
