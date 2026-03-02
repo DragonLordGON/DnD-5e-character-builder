@@ -1,6 +1,13 @@
-# DnD 5e character builder
+# Nebula character builder
 A homemade character builder for 5e, This currently lacks most functions but will be updated regularly to add functionnality
 
-HOW TO START IT
-download the files, go in VsCode and run dotnet build, then dotnet run
-(if it dosent work, try downloading dotnet from the error it gives you)
+The main features are :
+- Character creation (WIP)
+- Simple use for new players
+- Custom content (not done)
+- Character sheet management (not done)
+- Inventory (not done)
+- Battle tracker (not done)
+- Spell tracker (not done)
+- Character vault (loading saves is not done)
+- More
