@@ -251,8 +251,8 @@ namespace DndCharacterBuilder
             UpdateStatsUI();
             UpdatePortraitUI();
 
-            ShowOverlay("NEW HERO", 
-                "ADVANCED: Start with all 8s (27 points remaining).\nSIMPLE: Start with all 10s (15 points remaining).", 
+            ShowOverlay("CREATE A CHARACTER", 
+                "ADVANCED: No base preset, make your character from scratch.\nSIMPLE: Starts you off with a preset for a generic character, adapted for new players.", 
                 () => { 
                     MainModeTab.SelectedIndex = 1; 
                     BuilderTabControl.SelectedIndex = 0; // Race Selection is first
@@ -630,6 +630,11 @@ namespace DndCharacterBuilder
         }
 
         private void CloseOverlay_Click(object sender, RoutedEventArgs e) => OverlayBlur.IsVisible = false;
+
+        private void OverlayContent_PointerPressed(object sender, PointerPressedEventArgs e)
+        {
+            e.Handled = true;
+        }
 
         // --- SELECTION LOGIC ---
 

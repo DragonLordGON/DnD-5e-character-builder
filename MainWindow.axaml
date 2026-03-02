@@ -29,7 +29,7 @@
 
         <Border Grid.Column="1" Padding="12" BorderBrush="#333333" BorderThickness="1,0,0,0" Background="{StaticResource bg.alt.brush}">
           <Grid RowDefinitions="Auto,*">
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8" >
               <TextBlock Grid.Column="0" Text="CHARACTER VAULT" Foreground="{StaticResource text.brush}" FontSize="12" FontWeight="Bold" VerticalAlignment="Center" />
               <Button Grid.Column="1" 
                       HorizontalAlignment="Right" 
@@ -41,15 +41,18 @@
                       Data="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z" />
               </Button>
             </Grid>
-            <ListBox Grid.Row="1" x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick">
+            <ListBox Grid.Row="1" x:Name="CharacterVaultList" DoubleTapped="VaultItem_DoubleClick" CornerRadius="6">
               <ListBox.ItemTemplate>
-                <DataTemplate DataType="models:Character">
-                  <Grid ColumnDefinitions="*,Auto" Margin="0,4">
-                    <StackPanel>
+                <DataTemplate DataType="models:Character" x:CompileBindings="True">
+                  <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4">
+                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="19" ClipToBounds="True" Margin="0,0,12,0" Background="#333333">
+                      <Image Source="{Binding PortraitBitmap}" Stretch="UniformToFill" />
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
                       <TextBlock Text="{Binding Name}" Foreground="{StaticResource text.brush}" />
                       <TextBlock Text="{Binding Level, StringFormat='Level {0}'}" Foreground="{StaticResource text.secondary.brush}" FontSize="12" />
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Open Folder" Click="OpenFolder_Click" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" >
+                    <Button Grid.Column="2" Content="Open Folder" Click="OpenFolder_Click" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" >
                       <Path Fill="{StaticResource text.brush}" Width="16" Height="16" Stretch="Uniform"
                             Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8z" />
                     </Button>
@@ -75,9 +78,14 @@
             <TabItem Header="Race">
               <Grid ColumnDefinitions="2*,*" Margin="8">
                 <StackPanel Grid.Column="0" Spacing="8">
-                  <Grid>
-                    <TextBox x:Name="CharacterNameInput" TextChanged="CharacterNameInput_TextChanged" GotFocus="CharacterNameInput_GotFocus" LostFocus="CharacterNameInput_LostFocus" />
-                    <TextBlock x:Name="CharacterNamePlaceholder" Text="Character Name" Foreground="#808080" IsHitTestVisible="False" Margin="8,6,0,0" />
+                  <Grid ColumnDefinitions="Auto, *">
+                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="20" ClipToBounds="True" Margin="0,0,10,0" Background="#333333" DoubleTapped="Portrait_Click">
+                      <Image Source="{Binding #PortraitBrushHeader.Source}" Stretch="UniformToFill" />
+                    </Border>
+                    <Grid Grid.Column="1">
+                      <TextBox x:Name="CharacterNameInput" TextChanged="CharacterNameInput_TextChanged" GotFocus="CharacterNameInput_GotFocus" LostFocus="CharacterNameInput_LostFocus" />
+                      <TextBlock x:Name="CharacterNamePlaceholder" Text="Character Name" Foreground="#808080" IsHitTestVisible="False" Margin="8,6,0,0" />
+                    </Grid>
                   </Grid>
                   <TextBlock x:Name="RaceSelectionCount" Foreground="Orange" Text="0/1 Selected" />
                   <ListBox x:Name="RaceList" Height="350" SelectionChanged="RaceList_SelectionChanged" DoubleTapped="RaceList_MouseDoubleClick" />
@@ -205,8 +213,8 @@
         </Grid>
       </Carousel>
 
-    <Border x:Name="OverlayBlur" Background="#AA000000" IsVisible="False">
-      <Border Width="520" CornerRadius="8" Padding="16" Background="#1e1e1e" BorderBrush="#3a3a3a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Border x:Name="OverlayBlur" Background="#AA000000" IsVisible="False" PointerPressed="CloseOverlay_Click">
+      <Border Width="520" CornerRadius="8" Padding="16" Background="#1e1e1e" BorderBrush="#3a3a3a" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center" PointerPressed="OverlayContent_PointerPressed">
         <StackPanel Spacing="10">
           <TextBlock x:Name="OverlayTitle" FontSize="20" Foreground="White" />
           <TextBlock x:Name="OverlayMessage" TextWrapping="Wrap" Foreground="#DDDDDD" />
@@ -214,7 +222,6 @@
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
             <Button x:Name="OverlayAltBtn" Content="SIMPLE" IsVisible="False" Click="SimplePreset_Click" />
             <Button x:Name="OverlayConfirmBtn" Content="OK" Click="ConfirmOverlay_Click" />
-            <Button Content="Close" Click="CloseOverlay_Click" />
           </StackPanel>
         </StackPanel>
       </Border>

@@ -39,7 +39,26 @@ namespace DndCharacterBuilder.Models
         public CharacterClass? Class { get; set; }
         public Subclass? Subclass { get; set; }
         public int Level { get; set; } = 1;
-        public string PortraitPath { get; set; } = "";
+        public string PortraitPath { get;set; } = "";
+        
+        // Helper for UI binding since Avalonia needs Bitmaps for local files
+        private Avalonia.Media.Imaging.Bitmap? _portraitBitmap;
+        [System.Xml.Serialization.XmlIgnore]
+        public Avalonia.Media.Imaging.Bitmap? PortraitBitmap 
+        { 
+            get 
+            {
+                if (_portraitBitmap == null && !string.IsNullOrEmpty(PortraitPath) && System.IO.File.Exists(PortraitPath))
+                {
+                    try {
+                        using var stream = System.IO.File.OpenRead(PortraitPath);
+                        _portraitBitmap = new Avalonia.Media.Imaging.Bitmap(stream);
+                    } catch { return null; }
+                }
+                return _portraitBitmap;
+            }
+        }
+
         public Dictionary<string, int> BaseStats { get; set; } = new Dictionary<string, int>(); 
         public List<string> Passives { get; set; } = new List<string>();
         public List<string> KnownSpells { get; set; } = new List<string>();
